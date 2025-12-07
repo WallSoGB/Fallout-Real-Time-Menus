@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="nvse">
+      <UniqueIdentifier>{92a4f350-f2ec-4fca-bdd3-927732d91b34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal">
+      <UniqueIdentifier>{97bd151b-5034-401b-8670-08f3c99fee21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal\Game">
+      <UniqueIdentifier>{c220bb6c-be1f-43ef-aee0-f3f44a34893b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal\Game\Bethesda">
+      <UniqueIdentifier>{806ef1b6-f4b4-4de9-a00a-e0c9c860692d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal\Game\Gamebryo">
+      <UniqueIdentifier>{6af96ec7-b0af-4309-a797-ab6f11cae5b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared">
+      <UniqueIdentifier>{9acb5579-8300-4a9f-96df-bc16e2d34124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\Utils">
+      <UniqueIdentifier>{13cf3b03-96af-4723-be72-e76877f864ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\NVSEManager">
+      <UniqueIdentifier>{bb3f8453-4e8e-4fae-b5c5-00ad669d2a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\SafeWrite">
+      <UniqueIdentifier>{71bbf5b8-d3ff-4ec8-91f6-2c6567970664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\BSMemory">
+      <UniqueIdentifier>{c282c475-28b5-4171-9c83-7605af24c0b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal\RealTimeMenus">
+      <UniqueIdentifier>{70768ce6-fc22-42fb-b4db-797a5dad3034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal\Game\Obsidian">
+      <UniqueIdentifier>{e2ef10e5-16ba-4cfd-afba-8eeb337b053c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\nvse\nvse\GameRTTI.cpp">
+      <Filter>nvse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nvse\nvse\Utilities.cpp">
+      <Filter>nvse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\NVSEManager\NVSEGlobalManager.cpp">
+      <Filter>shared\NVSEManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\SafeWrite\SafeWrite.cpp">
+      <Filter>shared\SafeWrite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\Utils\DebugLog.cpp">
+      <Filter>shared\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nvse\nvse\PluginAPI.cpp">
+      <Filter>nvse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nvse\nvse\CommandTable.cpp">
+      <Filter>nvse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\BSMemory\BSMemory.cpp">
+      <Filter>shared\BSMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\Actor.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\TESObjectREFR.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\Interface.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BSTimer.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\StartMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\VATSMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\PlayerCharacter.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\CombatController.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BGSOpenCloseForm.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ImageSpaceModifierInstanceForm.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\TimeGlobal.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BSRenderedTexture.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiDX9Renderer.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\TES.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\MobileObject.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ImageSpaceManager.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BSShaderManager.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\TESMain.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ShadowSceneNode.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\TESForm.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\InterfaceManager.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\VATSEffect.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiAVObject.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiNode.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiPoint3.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\InventoryMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\PlayerMover.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\Tile.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\MagicTarget.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ContainerMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\TESPackage.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\Controls.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="internal\RealTimeMenus\RealTimeMenus.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\Calendar.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Dialogue.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Settings.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-VATS.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Utils.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Rendering.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-PipBoy.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\LockPickMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Container.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Scripting.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\DialogMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\RealTimeMenus\RTM-Terminal.cpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiObjectNET.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiControllerSequence.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiFixedString.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Gamebryo\NiControllerManager.cpp">
+      <Filter>internal\Game\Gamebryo</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Obsidian\CompanionWheelMenu.cpp">
+      <Filter>internal\Game\Obsidian</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Obsidian\RecipeMenu.cpp">
+      <Filter>internal\Game\Obsidian</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\RepairServicesMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\RepairMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\HackingMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ComputersMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BarterMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ScreenCustomSplatter.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ScreenSplatter.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\VATS.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\MapMenu.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\ImageSpaceEffectDepthOfField.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BSAudio.cpp">
+      <Filter>internal\Game\Bethesda</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\nvse\nvse\CommandTable.h">
+      <Filter>nvse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nvse\nvse\GameRTTI.h">
+      <Filter>nvse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nvse\nvse\PluginAPI.h">
+      <Filter>nvse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nvse\nvse\Utilities.h">
+      <Filter>nvse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\NVSEManager\NVSEGlobalManager.hpp">
+      <Filter>shared\NVSEManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\Defines.hpp">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SafeWrite\SafeWrite.hpp">
+      <Filter>shared\SafeWrite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\Utils\DebugLog.hpp">
+      <Filter>shared\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\Utils\Bitfield.hpp">
+      <Filter>shared\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\Utils\AddressPtr.hpp">
+      <Filter>shared\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\Utils\StackObject.hpp">
+      <Filter>shared\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\BSMemory\BSMemory.hpp">
+      <Filter>shared\BSMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Dialogue.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-VATS.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RealTimeMenus.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Settings.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Utils.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-PipBoy.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Rendering.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Container.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Scripting.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+    <ClInclude Include="internal\RealTimeMenus\RTM-Terminal.hpp">
+      <Filter>internal\RealTimeMenus</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\shared\Utils\AddressPtr.natvis">
+      <Filter>shared\Utils</Filter>
+    </Natvis>
+  </ItemGroup>
+</Project>
