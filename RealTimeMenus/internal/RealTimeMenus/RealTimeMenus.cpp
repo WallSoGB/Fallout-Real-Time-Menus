@@ -33,6 +33,7 @@ namespace RealTimeMenus {
 	constexpr uint32_t EFFECT_FLAG_PAUSED_IN_MENU = 1 << 30;
 
 	CallDetour kInterfacePreIdle;
+	CallDetour kLoadBlockedScriptsDetour;
 
 	bool bOurInMenuMode = false;
 	bool bBlockingMenuMode = false;
@@ -252,6 +253,11 @@ namespace RealTimeMenus {
 
 			return apSequence->Deactivate(0.f, false);
 		}
+
+		static void* InitBlockedScripts() {
+			RealTimeMenus::Scripting::LoadBlockFiles();
+			return CdeclCall<void*>(kLoadBlockedScriptsDetour.GetOverwrittenAddr());
+		}
 	};
 
 	__declspec(naked) void DeactivateSequenceHook_Asm() {
@@ -282,6 +288,8 @@ namespace RealTimeMenus {
 	}
 
 	void InitHooks() {
+		kLoadBlockedScriptsDetour.ReplaceCall(0x86B0ED, &Hook::InitBlockedScripts);
+
 		RealTimeMenus::Rendering::InitHooks();
 		RealTimeMenus::Container::InitHooks();
 		RealTimeMenus::Terminal::InitHooks();
@@ -361,6 +369,8 @@ namespace RealTimeMenus {
 				RealTimeMenus::PipBoy::InitDeferredHooks();
 				RealTimeMenus::Dialogue::InitDeferredHooks();
 				RealTimeMenus::VATS::InitDeferredHooks();
+
+				RealTimeMenus::Scripting::WaitForBlockFiles();
 				break;
 			}
 			case NVSEMessagingInterface::kMessage_MainGameLoop:
