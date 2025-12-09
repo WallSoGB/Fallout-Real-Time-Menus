@@ -503,6 +503,11 @@ namespace RealTimeMenus {
 		}
 
 		void InitDeferredHooks() {
+			ReplaceCallEx(0x607A0A, &Hook::CanActorBeActivated); // Don't allow to activate actors in dialogue
+			ReplaceCallEx(0x5FA3B0, &Hook::CanActorBeActivated); // Same, but creatures
+
+			WriteRelJump(0x8E8DC8, ShouldWaitForTargetInDialogue_Asm);
+
 			if (!Settings::bPauseDialogue) {
 				Hook_FakeInDialogue<0x4537C9>(); // TES::UpdateCellMainThread
 				Hook_FakeInDialogue<0x86E6E7>(); // TESMain::OnIdle
@@ -525,17 +530,12 @@ namespace RealTimeMenus {
 
 				ReplaceCallEx(0x76298A, &Hook::GetCurrentProcess_CanActorSpeak); // Close dialogue menu if speaker is dead
 
-				ReplaceCallEx(0x607A0A, &Hook::CanActorBeActivated); // Don't allow to active actors in dialogue
-				ReplaceCallEx(0x5FA3B0, &Hook::CanActorBeActivated); // Same, but creatures
-
 				ReplaceCallEx(0x8EF5E5, &Hook::IsInCombat_IsInDialogue); // Don't greet chatter in dialogue
 
 				PatchMemoryNop(0x8EFF90, 8); // Don't clear run-once package if in dialogue and fAwarePlayerTimer runs out
 				WriteRelCallEx(0x8EFF90, &Hook::GetRunOncePackage_IsInDialogue);
 
 				ReplaceCallEx(0x9018B6, &Hook::CanSpeak_IsInDialogue);
-
-				WriteRelJump(0x8E8DC8, ShouldWaitForTargetInDialogue_Asm);
 
 				ReplaceCallEx(0x9F513C, &Hook::ShouldIgnoreInSandbox); // Ignore actor in dialogue as a sandbox choice
 
