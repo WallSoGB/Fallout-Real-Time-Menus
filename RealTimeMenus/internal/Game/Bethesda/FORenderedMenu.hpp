@@ -85,8 +85,8 @@ public:
 	float							fDistortDuration;
 	float							fNextScanlineTime;
 	NiColorA						kTileColor;
-	uint8_t							bIsRenderedMenuOrPipboyOpen;
-	uint8_t							byte0B9;
+	bool							bIsRenderedMenuOrPipboyOpen;
+	bool							bMenuRendering;
 	NiPointer<NiTexture>			spScanlineTexture;
 	NiColorA						kTileColor2;
 	bool							bIsQuantityMenuShown;
