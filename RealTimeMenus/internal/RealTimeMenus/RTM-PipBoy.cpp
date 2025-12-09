@@ -68,7 +68,8 @@ namespace RealTimeMenus {
 					}
 
 					const uint32_t uiCurrentTab = pMapMenu->uiCurrentTab;
-					if (pMapMenu->pTileWorldMap && (uiCurrentTab == 32 || uiCurrentTab == 33)) {
+					bool bCanUpdateMap = Interface::GetPipboyManager()->bMenuRendering && !MapMenu::ShouldRenderLocalMap();
+					if (bCanUpdateMap && pMapMenu->pTileWorldMap && (uiCurrentTab == 32 || uiCurrentTab == 33)) {
 						static uint32_t uiLastUpdateTime = 0;
 						const uint32_t uiCurrentTime = GetTickCount();
 						if (uiCurrentTime - uiLastUpdateTime >= 100) {

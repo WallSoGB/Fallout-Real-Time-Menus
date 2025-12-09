@@ -98,6 +98,8 @@ public:
 
 	void AddQuestMarkers();
 	void AddCompanionMarkers();
+
+	static bool ShouldRenderLocalMap();
 };
 
 ASSERT_SIZE(MapMenu, 0x230);

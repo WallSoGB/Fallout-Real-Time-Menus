@@ -13,3 +13,9 @@ void MapMenu::AddQuestMarkers() {
 void MapMenu::AddCompanionMarkers() {
 	ThisCall(0x79EA30, this);
 }
+
+
+// GAME - 0x7A1750
+bool MapMenu::ShouldRenderLocalMap() {
+	return CdeclCall<bool>(0x7A1750);
+}
