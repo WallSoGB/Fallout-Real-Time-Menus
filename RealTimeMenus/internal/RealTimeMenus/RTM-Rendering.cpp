@@ -100,17 +100,17 @@ namespace RealTimeMenus {
 					pISMod = reinterpret_cast<TESImageSpaceModifier*>(Utils::GetCurrentMenuBackgroundFX());
 
 					if (pISMod) {
-						RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = true;
 						ImageSpaceModifierInstanceForm::Trigger(pISMod, 1.f, nullptr);
 						reinterpret_cast<TESMain*>(this)->UpdateImageSpace(false);
 					}
 				}
 
+				RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = true;
 				ThisCall(kDetour.GetOverwrittenAddr(), this, apTexture, abRenderedMenu, abPipboyMode);
+				RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = false;
 
 				if (bBlur) {
 					if (pISMod) {
-						RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = false;
 						ImageSpaceModifierInstanceForm::Stop(pISMod);
 						reinterpret_cast<TESMain*>(this)->UpdateImageSpace(false);
 					}
