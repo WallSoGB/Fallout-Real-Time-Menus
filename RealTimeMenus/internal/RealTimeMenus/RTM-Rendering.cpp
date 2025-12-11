@@ -105,9 +105,7 @@ namespace RealTimeMenus {
 					}
 				}
 
-				RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = true;
 				ThisCall(kDetour.GetOverwrittenAddr(), this, apTexture, abRenderedMenu, abPipboyMode);
-				RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = false;
 
 				if (bBlur) {
 					if (pISMod) {
