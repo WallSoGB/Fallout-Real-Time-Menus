@@ -21,6 +21,7 @@
 #include "Bethesda/ShadowSceneNode.hpp"
 #include "Bethesda/TES.hpp"
 #include "Bethesda/TimeGlobal.hpp"
+#include "Bethesda/DialogMenu.hpp"
 
 #include "Gamebryo/NiControllerSequence.hpp"
 
@@ -153,7 +154,8 @@ namespace RealTimeMenus {
 
 			// Update when not in dialog
 			// Dialog updates player in its own code
-			if (!bInDialog) {
+			const bool bInDialogServiceMenu = DialogMenu::GetSingleton() && DialogMenu::GetSingleton()->bInBackground;
+			if (!bInDialog || bInDialogServiceMenu) {
 				Utils::UpdatePlayerMovement(pThis, fDelta, !bInRenderedMenu, true, true);
 			}
 
