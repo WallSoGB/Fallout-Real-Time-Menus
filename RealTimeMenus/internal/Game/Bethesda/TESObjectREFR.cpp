@@ -5,6 +5,10 @@ TESBoundObject* TESObjectREFR::GetObjectReference() const {
 	return kData.pObjectReference;
 }
 
+ExtraDataList* TESObjectREFR::GetExtraDataList() {
+	return &kExtraList;
+}
+
 // GAME - 0x430830
 const NiPoint3& TESObjectREFR::GetAngleOnReference() const {
 	return kData.kRotation;

@@ -141,11 +141,13 @@ public:
 
 	const NiPoint3& GetAngleOnReference() const;
 
-	float GetScale() const;;
+	float GetScale() const;
 
 	float GetDistanceFromReference(TESObjectREFR* apTarget, bool abEnabledOnly, bool abSharedSpace) const;
 
 	TESBoundObject* GetObjectReference() const;
+
+	ExtraDataList* GetExtraDataList();
 };
 
 ASSERT_SIZE(TESObjectREFR, 0x68);

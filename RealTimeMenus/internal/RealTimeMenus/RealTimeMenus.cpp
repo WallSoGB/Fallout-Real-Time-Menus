@@ -179,6 +179,12 @@ namespace RealTimeMenus {
 				}
 			}
 
+			if (!pThis->IsTrespassing()) {
+				ExtraDataList* pExtraData = pThis->GetExtraDataList();
+				if (ThisCall<void*>(0x41CD70, pExtraData)) // ExtraDataList::GetTrespassPackage
+					ThisCall(0x41CDA0, pExtraData); // ExtraDataList::RemoveTrespassPackage
+			}
+
 			RealTimeMenus::Utils::ShouldCloseMenus(pThis);
 		}
 
