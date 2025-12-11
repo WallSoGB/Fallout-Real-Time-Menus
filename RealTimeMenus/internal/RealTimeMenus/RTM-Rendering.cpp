@@ -169,7 +169,6 @@ namespace RealTimeMenus {
 					ImageSpaceModifierInstanceForm::Trigger(pISMod, 1.f, nullptr);
 					reinterpret_cast<TESMain*>(this)->UpdateImageSpace(false);
 					ImageSpaceManager::bEOFEnabled = true;
-					RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = true;
 				}
 
 				pThis->DrawWorld_DrawScene(nullptr, false, false, false);
@@ -189,7 +188,6 @@ namespace RealTimeMenus {
 				BSShaderManager::RenderImageSpaceEffects(pRenderer, pCurrentRT, apMainTarget);
 
 				if (pISMod) {
-					RendererSettingCollection::Imagespace::bDoDepthOfField->uValue.b = false;
 					ImageSpaceModifierInstanceForm::Stop(pISMod);
 					reinterpret_cast<TESMain*>(this)->UpdateImageSpace(false);
 					ImageSpaceManager::bEOFEnabled = bEOF;
