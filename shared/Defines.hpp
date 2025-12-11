@@ -146,5 +146,6 @@ __forceinline T_Ret FastCall(uint32_t _addr, Args ...args) {
 
 #define SPEC_RESTRICT	__declspec(restrict)
 #define SPEC_NOINLINE	__declspec(noinline)
+#define SPEC_INLINE		__forceinline
 #define SPEC_NORETURN	__declspec(noreturn)
 #define SPEC_NOALIAS	__declspec(noalias)
