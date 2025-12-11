@@ -45,6 +45,10 @@ namespace RealTimeMenus {
 		SPEC_NOINLINE bool __fastcall HasOpenCloseAnims(const TESObjectREFR* apReference, bool abClose);
 	
 		SPEC_NOINLINE void __fastcall CloseReference(TESObjectREFR* apReference);
+
+		static SPEC_INLINE uint32_t GetDLLAddress(void* ahModule, uint32_t auiRawAddress) {
+			return reinterpret_cast<uint32_t>(ahModule) + auiRawAddress - 0x10000000;
+		}
 	}
 
 }
