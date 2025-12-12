@@ -9,6 +9,7 @@ namespace RealTimeMenus {
 		// Main
 		bool bNoHardcoreInMenus = true;
 		bool bControllerRumbleInMenus = false;
+		uint32_t uiCompanionMenuHandling = 0;
 
 		// Menus
 		bool bPauseContainers = false;
@@ -61,6 +62,7 @@ namespace RealTimeMenus {
 			// Main
 			Settings::bNoHardcoreInMenus				= kINI.GetBoolValue("Main", "bNoHardcoreInMenus", true);
 			Settings::bControllerRumbleInMenus			= kINI.GetBoolValue("Main", "bControllerRumbleInMenus", true);
+			Settings::uiCompanionMenuHandling			= kINI.GetLongValue("Main", "uiCompanionMenuHandling", 0);
 
 			// Menus
 			Settings::bPauseContainers					= kINI.GetBoolValue("Menus", "bPauseContainers", false);

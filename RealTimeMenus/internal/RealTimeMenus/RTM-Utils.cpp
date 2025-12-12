@@ -305,7 +305,7 @@ namespace RealTimeMenus {
 			}
 		}
 
-		bool __fastcall IsRefOutOfReach(const PlayerCharacter* apPlayer, const TESObjectREFR* apRef) {
+		bool __fastcall IsRefOutOfReach(const PlayerCharacter* apPlayer, const TESObjectREFR* apRef, float afReachBonus = 0.f) {
 			const NiAVObject* pTargetRoot = apRef->Get3D();
 			const NiBound* pTargetBound = pTargetRoot->GetWorldBound();
 
@@ -322,7 +322,7 @@ namespace RealTimeMenus {
 				kViewPos += apPlayer->kPtD58;
 
 			float fContainerDistance = (pTargetBound->m_kCenter - kViewPos).Length() - pTargetBound->m_fRadius;
-			return fContainerDistance > GameSettingCollection::iActivatePickLength->Int();
+			return fContainerDistance > GameSettingCollection::iActivatePickLength->Int() + afReachBonus;
 		}
 
 		void CloseContainerMenu() {
@@ -346,7 +346,21 @@ namespace RealTimeMenus {
 				}
 			}
 
-			if (IsRefOutOfReach(apPlayer, pContainerRef))
+			float fReachBonus = 0.f;
+			if (Settings::uiCompanionMenuHandling && pContainerRef->IsActor() && static_cast<const Actor*>(pContainerRef)->IsPlayerTeammate()) {
+				switch (Settings::uiCompanionMenuHandling) {
+					case COMPANION_MENU_EXTEND_CHECK:
+						fReachBonus = 256.0f;
+						break;
+					case COMPANION_MENU_SKIP_CHECK:
+						return;
+					default:
+						break;
+				}
+			}
+
+
+			if (IsRefOutOfReach(apPlayer, pContainerRef, fReachBonus))
 				CloseContainerMenu();
 		}
 
