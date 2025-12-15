@@ -18,6 +18,12 @@ namespace RealTimeMenus {
 			~AutoPlayerCall() { ucInPlayerUpdate--; }
 		};
 
+		enum CompanionMenuHandling : uint32_t {
+			COMPANION_MENU_DEFAULT		= 0, // No special behavior
+			COMPANION_MENU_EXTEND_CHECK	= 1, // Increase allowed interact radius
+			COMPANION_MENU_SKIP_CHECK	= 2, // Don't check for interact radius
+		};
+
 		enum MenuPauseState : uint32_t {
 			MENU_PAUSED	= 0, // Pauses the game, runs MenuMode only
 			MENU_LIVE	= 1, // Does not pause the game, runs both GameMode and MenuMode

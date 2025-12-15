@@ -5,8 +5,9 @@ namespace RealTimeMenus {
 	namespace Settings {
 
 		// Main
-		extern bool bNoHardcoreInMenus;
-		extern bool bControllerRumbleInMenus;
+		extern bool		bNoHardcoreInMenus;
+		extern bool		bControllerRumbleInMenus;
+		extern uint32_t uiCompanionMenuHandling;
 
 		// Menus
 		extern bool bPauseContainers;
