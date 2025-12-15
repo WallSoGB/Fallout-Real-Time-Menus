@@ -368,12 +368,12 @@ namespace RealTimeMenus {
 
 		void __fastcall ShouldCloseMenus(PlayerCharacter* apPlayer) {
 			ContainerMenu* pContainerMenu = ContainerMenu::GetSingleton();
-			if (InterfaceManager::GetSingleton()->IsMenuInStack(Interface::Container) && pContainerMenu && pContainerMenu->pContainer == pActivatedReference) {
+			if (InterfaceManager::GetSingleton()->IsMenuInStack(Interface::Container) && pContainerMenu && pContainerMenu->pContainer && pContainerMenu->pContainer == pActivatedReference) {
 				ShouldCloseContainerMenu(apPlayer, pContainerMenu);
 			}
 
 			LockPickMenu* pLockPickMenu = LockPickMenu::GetSingleton();
-			if (InterfaceManager::GetSingleton()->IsMenuInStack(Interface::LockPick) && pLockPickMenu && pLockPickMenu->pLockRef == pActivatedReference) {
+			if (InterfaceManager::GetSingleton()->IsMenuInStack(Interface::LockPick) && pLockPickMenu && pLockPickMenu->pLockRef && pLockPickMenu->pLockRef == pActivatedReference) {
 				ShouldCloseLockPickMenu(apPlayer, pLockPickMenu);
 			}
 		}
