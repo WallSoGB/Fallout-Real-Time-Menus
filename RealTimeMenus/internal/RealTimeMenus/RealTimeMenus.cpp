@@ -360,10 +360,19 @@ namespace RealTimeMenus {
 			PatchMemoryNop(0x870CA5, 2);
 	}
 
+	void HandleNVR() {
+		const PluginInfo* pNVR = NVSEGlobalManager::GetSingleton().GetCmdInterface()->GetPluginInfoByName("NewVegasReloaded");
+		if (pNVR && pNVR->version < 440) {
+			MessageBoxA(nullptr, "Real Time Menus detected an outdated version of New Vegas Reloaded.\nPlease update to at least version 4.4.0.\nYou can find latest versions in the #nightly-builds channel.", "Real Time Menus", MB_OK | MB_ICONERROR);
+			ExitProcess(0);
+		}
+	}
+
 	static void MessageHandler(NVSEMessagingInterface::Message* apMessage) {
 		switch (apMessage->type) {
 			case NVSEMessagingInterface::kMessage_PostPostLoad:
 			{
+				RealTimeMenus::HandleNVR();
 				RealTimeMenus::ReplaceCommands();
 				break;
 			}
