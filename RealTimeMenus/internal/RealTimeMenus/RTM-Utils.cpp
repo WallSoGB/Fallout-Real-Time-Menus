@@ -85,10 +85,20 @@ namespace RealTimeMenus {
 			if (!Settings::bPauseContainers) {
 				if (ContainerMenu::GetSingleton())
 					return true;
+			}
+
+			if (!Settings::bPauseBarter) {
 				if (BarterMenu::GetSingleton())
 					return true;
+			}
+
+
+			if (!Settings::bPauseServiceRepair) {
 				if (RepairServicesMenu::GetSingleton())
 					return true;
+			}
+
+			if (!Settings::bPauseRecipeMenu) {
 				if (RecipeMenu::GetSingleton())
 					return true;
 			}
@@ -110,6 +120,21 @@ namespace RealTimeMenus {
 				return true;
 
 			return false;
+		}
+
+		DECLSPEC_NOINLINE MenuPauseState IsServiceMenuPaused(uint32_t aeMenu) {
+			switch (aeMenu) {
+				case Interface::Menus::Container:
+					return Settings::bPauseContainers ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+				case Interface::Menus::Barter:
+					return Settings::bPauseBarter ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+				case Interface::Menus::VendorRepair:
+					return Settings::bPauseServiceRepair ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+				case Interface::Menus::Recipe:
+					return Settings::bPauseRecipeMenu ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+				default:
+					return (Settings::bPauseContainers || Settings::bPauseBarter || Settings::bPauseServiceRepair || Settings::bPauseRecipeMenu) ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+			}
 		}
 
 		MenuPauseState IsLiveMenu(uint32_t aeMenu, bool abCheckInstances, bool abGameModeCheck) {
@@ -147,12 +172,12 @@ namespace RealTimeMenus {
 					if (abCheckInstances && IsLiveMenuInstanceAlive(Interface::Menus::Dialog)){
 						auto eState = IsLiveMenu(Interface::Menus::Dialog, abCheckInstances, abGameModeCheck);
 						// Let service menu override live state if dialogue is live
-						if (eState >= MenuPauseState::MENU_LIVE && Settings::bPauseContainers)
+						if (eState >= MenuPauseState::MENU_LIVE && IsServiceMenuPaused(aeMenu))
 							return MenuPauseState::MENU_PAUSED;
 						else
 							return eState;
 					}
-					return Settings::bPauseContainers ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+					return IsServiceMenuPaused(aeMenu);
 				case Interface::Menus::LockPick:
 					return Settings::bPauseLockPickMenu ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
 				case Interface::Menus::VATS:
@@ -223,10 +248,19 @@ namespace RealTimeMenus {
 				if (eMenu != Interface::Menus::NoMenu) {
 					switch (eMenu) {
 						case Interface::Menus::Container:
-						case Interface::Menus::Barter:
-						case Interface::Menus::VendorRepair:
-						case Interface::Menus::Recipe:
 							if (!Settings::bBackgroundBlurInContainers)
+								return nullptr;
+							break;
+						case Interface::Menus::Barter:
+							if (!Settings::bBackgroundBlurInBarter)
+								return nullptr;
+							break;
+						case Interface::Menus::VendorRepair:
+							if (!Settings::bBackgroundBlurInServiceRepair)
+								return nullptr;
+							break;
+						case Interface::Menus::Recipe:
+							if (!Settings::bBackgroundBlurInRecipeMenu)
 								return nullptr;
 							break;
 						case Interface::Menus::Hacking:
@@ -244,10 +278,22 @@ namespace RealTimeMenus {
 				}
 				else {
 					if (!Settings::bBackgroundBlurInContainers) {
-						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Container)
-							|| Utils::IsLiveMenuInstanceAlive(Interface::Menus::Barter)
-							|| Utils::IsLiveMenuInstanceAlive(Interface::Menus::VendorRepair)
-							|| Utils::IsLiveMenuInstanceAlive(Interface::Menus::Recipe))
+						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Container))
+							return nullptr;
+					}
+
+					if (!Settings::bBackgroundBlurInBarter) {
+						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Barter))
+							return nullptr;
+					}
+
+					if (!Settings::bBackgroundBlurInServiceRepair) {
+						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::VendorRepair))
+							return nullptr;
+					}
+
+					if (!Settings::bBackgroundBlurInRecipeMenu) {
+						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Recipe))
 							return nullptr;
 					}
 
