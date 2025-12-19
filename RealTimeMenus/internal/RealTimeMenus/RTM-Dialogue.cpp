@@ -604,6 +604,10 @@ namespace RealTimeMenus {
 					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A758), 6);
 					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A765), 6);
 				}
+				else {
+					MessageBoxA(nullptr, "Real Time Menus detected an outdated version of Enhanced Camera.\nPlease update to the 1.4f version from Nexus Mods.\nThe mod page is called \"New Vegas - Enhanced Camera - Detached head hotfix\"", "Real Time Menus", MB_OK | MB_ICONERROR);
+					ExitProcess(0);
+				}
 			}
 		}
 
