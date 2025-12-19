@@ -13,6 +13,9 @@ namespace RealTimeMenus {
 
 		// Menus
 		bool bPauseContainers = false;
+		bool bPauseBarter = false;
+		bool bPauseServiceRepair = false;
+		bool bPauseRecipeMenu = false;
 		bool bPauseLockPickMenu = false;
 		bool bPauseComputerMenu = false;
 		bool bPauseUtilityMenus = true;
@@ -23,6 +26,9 @@ namespace RealTimeMenus {
 
 		// Backgrounds
 		bool bBackgroundBlurInContainers = true;
+		bool bBackgroundBlurInBarter = true;
+		bool bBackgroundBlurInServiceRepair = true;
+		bool bBackgroundBlurInRecipeMenu = true;
 		bool bBackgroundBlurInLockPickMenu = true;
 		bool bBackgroundBlurInComputerMenu = true;
 		bool bBackgroundBlurInCompanionWheel = true;
@@ -66,6 +72,9 @@ namespace RealTimeMenus {
 
 			// Menus
 			Settings::bPauseContainers					= kINI.GetBoolValue("Menus", "bPauseContainers", false);
+			Settings::bPauseBarter						= kINI.GetBoolValue("Menus", "bPauseBarter", false);
+			Settings::bPauseServiceRepair				= kINI.GetBoolValue("Menus", "bPauseServiceRepair", false);
+			Settings::bPauseRecipeMenu					= kINI.GetBoolValue("Menus", "bPauseRecipeMenu", false);
 			Settings::bPauseLockPickMenu				= kINI.GetBoolValue("Menus", "bPauseLockPickMenu", false);
 			Settings::bPauseComputerMenu				= kINI.GetBoolValue("Menus", "bPauseComputerMenu", false);
 			Settings::bPauseCompanionWheel				= kINI.GetBoolValue("Menus", "bPauseCompanionWheel", false);

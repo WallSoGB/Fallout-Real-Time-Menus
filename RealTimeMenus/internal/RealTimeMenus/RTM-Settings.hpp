@@ -11,6 +11,9 @@ namespace RealTimeMenus {
 
 		// Menus
 		extern bool bPauseContainers;
+		extern bool bPauseBarter;
+		extern bool bPauseServiceRepair;
+		extern bool bPauseRecipeMenu;
 		extern bool bPauseLockPickMenu;
 		extern bool bPauseComputerMenu;
 		extern bool bPauseCompanionWheel;
@@ -20,6 +23,9 @@ namespace RealTimeMenus {
 
 		// Backgrounds
 		extern bool bBackgroundBlurInContainers;
+		extern bool bBackgroundBlurInBarter;
+		extern bool bBackgroundBlurInServiceRepair;
+		extern bool bBackgroundBlurInRecipeMenu;
 		extern bool bBackgroundBlurInLockPickMenu;
 		extern bool bBackgroundBlurInComputerMenu;
 		extern bool bBackgroundBlurInCompanionWheel;
