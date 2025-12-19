@@ -167,7 +167,7 @@ namespace RealTimeMenus {
 		}
 
 		void InitDeferredHooks() {
-			if (!Settings::bPausePipBoy) {
+			if (!Settings::IsMenuPaused(Interface::PipBoy)) {
 				// Update actor values in the inventory menu
 				WriteRelJump(0x704E28, uint32_t(UpdateInventoryActorValue_Asm));
 

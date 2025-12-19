@@ -6,6 +6,7 @@
 #include "Bethesda/ComputersMenu.hpp"
 #include "Bethesda/HackingMenu.hpp"
 #include "Bethesda/PlayerCharacter.hpp"
+#include "Bethesda/Interface.hpp"
 
 #pragma region Code
 
@@ -68,7 +69,7 @@ namespace RealTimeMenus {
 			// Fix hacking menu not initializing form pointers to 0
 			kFixHackingMenuDetour.ReplaceCallEx(0x76551B, &Hook::FixHackingMenu);
 
-			if (!Settings::bPauseComputerMenu) {
+			if (!Settings::IsMenuPaused(Interface::Computers)) {
 				// Play terminal close anim on menu close
 				PatchMemoryNop(0x501724, 5);
 				kDestroyComputersMenuDetour.ReplaceCallEx(0x757B54, &Hook::DestroyComputersMenu);

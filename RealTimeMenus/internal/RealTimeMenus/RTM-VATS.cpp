@@ -266,7 +266,7 @@ namespace RealTimeMenus {
 		}
 
 		void InitDeferredHooks() {
-			if (!Settings::bPauseVATS) {
+			if (!Settings::IsMenuPaused(Interface::VATS)) {
 				PatchMemoryNop(0x944965, 6); // Always track target
 
 				// Render VATS UI even if we are not "on the target" (since it's moving)

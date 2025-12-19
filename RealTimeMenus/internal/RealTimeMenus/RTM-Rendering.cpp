@@ -38,7 +38,7 @@ namespace RealTimeMenus {
 
 			static bool ShouldUseNormalRenderPath() {
 				InterfaceManager* pUIMgr = InterfaceManager::GetSingleton();
-				return (Settings::bPausePipBoy && Interface::IsInPipBoy()) || (Settings::bPauseComputerMenu && pUIMgr->pRenderedMenu && pUIMgr->pRenderedMenu != pUIMgr->pPipboyManager);
+				return (Settings::IsMenuPaused(Interface::MainFour) && Interface::IsInPipBoy()) || (Settings::IsMenuPaused(Interface::Computers) && pUIMgr->pRenderedMenu && pUIMgr->pRenderedMenu != pUIMgr->pPipboyManager);
 			}
 		}
 
@@ -253,11 +253,11 @@ namespace RealTimeMenus {
 
 			ReplaceCallEx(0x86E8FD, &Hook::HandleMenuStaticBackground);
 
-			if (!Settings::bPausePipBoy) {
+			if (!Settings::IsMenuPaused(Interface::PipBoy)) {
 				SafeWriteBuf(0x870009, "\xC6\x05\x29\xEA\x1D\x01\x01\x90\x90\x90\x90", 11); // Set bMenuBGReady=1 instead of rendering it
 			}
 
-			if (!Settings::bPausePipBoy || !Settings::bPauseComputerMenu) {
+			if (!Settings::IsMenuPaused(Interface::PipBoy) || !Settings::IsMenuPaused(Interface::Computers)) {
 				PatchMemoryNopRange(0x870876, 0x870884);
 				SafeWriteBuf(0x87087C, "\x90\x90\x90\x90\x90\x90\x52\x50", 8);
 				ReplaceCallEx(0x870887, &Hook::DrawWorld_Standard_Ex); // Call TESMain::DrawWorld_DrawScene in Rendered Menu render, instead of TESMain::DrawWorld_CopyMenuBG
