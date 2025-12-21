@@ -251,6 +251,8 @@ namespace RealTimeMenus {
 			Hook_BlurredDrawWorld<0x870244>();
 			Hook_BlurredDrawWorld<0x8702A9>();
 
+			ReplaceCall(0x87212D, &Utils::GetCurrentMenuBackgroundFX);
+
 			ReplaceCallEx(0x86E8FD, &Hook::HandleMenuStaticBackground);
 
 			if (!Settings::IsMenuPaused(Interface::PipBoy)) {
