@@ -571,6 +571,10 @@ namespace RealTimeMenus {
 					Hook_IsInvulnerable<0x10869E4, false>(); // Make speaker invulnerable in dialogue
 					Hook_IsInvulnerable<0x1087024, false>(); // Make speaker invulnerable in dialogue
 				}
+
+				if (Settings::b3DVoiceInDialogue) {
+					SafeWrite8(0x8A5714 + 1, 0); // Play dialogue in 3D
+				}
 			}
 
 			if (Settings::b3rdPersonInDialogue) {

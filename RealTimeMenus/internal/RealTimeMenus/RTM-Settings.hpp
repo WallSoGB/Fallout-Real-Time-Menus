@@ -48,6 +48,7 @@ namespace RealTimeMenus {
 		extern bool bLookAroundInDialogue;
 		extern bool b3rdPersonInDialogue;
 		extern bool bShowHandsInDialogue;
+		extern bool b3DVoiceInDialogue;
 
 		extern bool bGameModeInDialogue;
 		extern bool bMenuModeForSpeakersOnly;
