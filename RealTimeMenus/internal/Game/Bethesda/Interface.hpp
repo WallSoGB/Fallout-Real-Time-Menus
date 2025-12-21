@@ -22,6 +22,8 @@ public:
 		OtherRoot				= 2,
 		Console					= 3,
 
+		PipBoy					= MainFour,
+
 		Message					= 1001,
 		Inventory				= 1002,
 		Stats					= 1003,
@@ -64,6 +66,8 @@ public:
 		Roulette				= 1082,
 		Caravan					= 1083,
 		Traits					= 1084,
+
+		MenuIDCount,
 	};
 
 	static bool IsInMenuMode();

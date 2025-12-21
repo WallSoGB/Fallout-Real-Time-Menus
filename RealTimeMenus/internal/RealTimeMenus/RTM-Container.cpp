@@ -5,6 +5,7 @@
 #include "Bethesda/BGSOpenCloseForm.hpp"
 #include "Bethesda/ContainerMenu.hpp"
 #include "Bethesda/PlayerCharacter.hpp"
+#include "Bethesda/Interface.hpp"
 
 #pragma region Code
 
@@ -85,7 +86,7 @@ namespace RealTimeMenus {
 		}
 
 		void InitDeferredHooks() {
-			if (!Settings::bPauseContainers) {
+			if (!Settings::IsMenuPaused(Interface::Container)) {
 				// Play container close anim on menu close
 				PatchMemoryNop(0x5173B8, 5);
 				kDestroyContainerMenuDetour.ReplaceCallEx(0x75B2FB, &Hook::DestroyContainerMenu);

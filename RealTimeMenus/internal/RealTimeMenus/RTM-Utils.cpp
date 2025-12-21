@@ -74,67 +74,52 @@ namespace RealTimeMenus {
 		}
 
 		bool IsAnyLiveMenuInstanceAlive(bool abGameModeCheck = false) {
-			if (!Settings::bPausePipBoy && Interface::IsInPipBoy())
+			if (!Settings::IsMenuPaused(Interface::PipBoy) && Interface::IsInPipBoy())
 				return true;
 
-			if (!Settings::bPauseDialogue && (!abGameModeCheck || Settings::bGameModeInDialogue)) {
+			if (!Settings::IsMenuPaused(Interface::Dialog) && (!abGameModeCheck || Settings::bGameModeInDialogue)) {
 				if (DialogMenu::GetSingleton())
 					return true;
 			}
 
-			if (!Settings::bPauseContainers) {
+			if (!Settings::IsMenuPaused(Interface::Container)) {
 				if (ContainerMenu::GetSingleton())
 					return true;
 			}
 
-			if (!Settings::bPauseBarter) {
+			if (!Settings::IsMenuPaused(Interface::Barter)) {
 				if (BarterMenu::GetSingleton())
 					return true;
 			}
 
 
-			if (!Settings::bPauseServiceRepair) {
+			if (!Settings::IsMenuPaused(Interface::VendorRepair)) {
 				if (RepairServicesMenu::GetSingleton())
 					return true;
 			}
 
-			if (!Settings::bPauseRecipeMenu) {
+			if (!Settings::IsMenuPaused(Interface::Recipe)) {
 				if (RecipeMenu::GetSingleton())
 					return true;
 			}
 
-			if (!Settings::bPauseLockPickMenu && LockPickMenu::GetSingleton())
+			if (!Settings::IsMenuPaused(Interface::LockPick) && LockPickMenu::GetSingleton())
 				return true;
 
-			if (!Settings::bPauseVATS && VATSMenu::GetSingleton())
+			if (!Settings::IsMenuPaused(Interface::VATS) && VATSMenu::GetSingleton())
 				return true;
 
-			if (!Settings::bPauseComputerMenu) {
+			if (!Settings::IsMenuPaused(Interface::Computers)) {
 				if (HackingMenu::GetSingleton())
 					return true;
 				if (ComputersMenu::GetSingleton())
 					return true;
 			}
 
-			if (!Settings::bPauseCompanionWheel && CompanionWheelMenu::GetSingleton())
+			if (!Settings::IsMenuPaused(Interface::CompanionWheel) && CompanionWheelMenu::GetSingleton())
 				return true;
 
 			return false;
-		}
-
-		DECLSPEC_NOINLINE MenuPauseState IsServiceMenuPaused(uint32_t aeMenu) {
-			switch (aeMenu) {
-				case Interface::Menus::Container:
-					return Settings::bPauseContainers ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				case Interface::Menus::Barter:
-					return Settings::bPauseBarter ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				case Interface::Menus::VendorRepair:
-					return Settings::bPauseServiceRepair ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				case Interface::Menus::Recipe:
-					return Settings::bPauseRecipeMenu ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				default:
-					return (Settings::bPauseContainers || Settings::bPauseBarter || Settings::bPauseServiceRepair || Settings::bPauseRecipeMenu) ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-			}
 		}
 
 		MenuPauseState IsLiveMenu(uint32_t aeMenu, bool abCheckInstances, bool abGameModeCheck) {
@@ -150,15 +135,8 @@ namespace RealTimeMenus {
 						return IsLiveMenu(Interface::Menus::NoMenu, abCheckInstances, abGameModeCheck);
 					return MenuPauseState::MENU_PAUSED;
 #endif
-				case Interface::Menus::MainFour:
-				case Interface::Menus::Inventory:
-				case Interface::Menus::Stats:
-				case Interface::Menus::PipboyData:
-				case Interface::Menus::PipboyRepair:
-				case Interface::Menus::ItemModMenu:
-					return Settings::bPausePipBoy ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
 				case Interface::Menus::Dialog:
-					if (Settings::bPauseDialogue)
+					if (Settings::IsMenuPaused(Interface::Dialog))
 						return MenuPauseState::MENU_PAUSED;
 					else if (Settings::bGameModeInDialogue)
 						return MenuPauseState::MENU_LIVE;
@@ -172,23 +150,14 @@ namespace RealTimeMenus {
 					if (abCheckInstances && IsLiveMenuInstanceAlive(Interface::Menus::Dialog)){
 						auto eState = IsLiveMenu(Interface::Menus::Dialog, abCheckInstances, abGameModeCheck);
 						// Let service menu override live state if dialogue is live
-						if (eState >= MenuPauseState::MENU_LIVE && IsServiceMenuPaused(aeMenu))
+						if (eState >= MenuPauseState::MENU_LIVE && Settings::IsMenuPaused(aeMenu))
 							return MenuPauseState::MENU_PAUSED;
 						else
 							return eState;
 					}
-					return IsServiceMenuPaused(aeMenu);
-				case Interface::Menus::LockPick:
-					return Settings::bPauseLockPickMenu ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				case Interface::Menus::VATS:
-					return Settings::bPauseVATS ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				case Interface::Menus::Hacking:
-				case Interface::Menus::Computers:
-					return Settings::bPauseComputerMenu ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
-				case Interface::Menus::CompanionWheel:
-					return Settings::bPauseCompanionWheel ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
+					return Settings::IsMenuPaused(aeMenu) ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
 				default:
-					return MenuPauseState::MENU_PAUSED;
+					return Settings::IsMenuPaused(aeMenu) ? MenuPauseState::MENU_PAUSED : MenuPauseState::MENU_LIVE;
 			}
 		}
 
@@ -235,10 +204,10 @@ namespace RealTimeMenus {
 				return TESForm::GetFormByNumericID(PAUSE_BACKGROUND_FX);
 
 			if (PlayerCharacter::GetSingleton()->HasPipBoyOpen())
-				return Settings::bBackgroundBlurInPipBoy ? TESForm::GetFormByNumericID(PIPBOY_BACKGROUND_FX) : nullptr;
+				return Settings::IsMenuBackgroundBlurred(Interface::PipBoy) ? TESForm::GetFormByNumericID(PIPBOY_BACKGROUND_FX) : nullptr;
 
 			if (eMenu == Interface::Menus::LockPick || (eMenu == Interface::Menus::NoMenu && LockPickMenu::GetSingleton()))
-				return Settings::bBackgroundBlurInLockPickMenu ? TESForm::GetFormByNumericID(INTERFACE_BACKGROUND_FX) : nullptr;
+				return Settings::IsMenuBackgroundBlurred(Interface::Menus::LockPick) ? TESForm::GetFormByNumericID(INTERFACE_BACKGROUND_FX) : nullptr;
 
 			InterfaceManager* pUIMgr = InterfaceManager::GetSingleton();
 			if (!pUIMgr->pMenuRoot->GetChildByName("Player Name Entry Menu")) {
@@ -246,64 +215,37 @@ namespace RealTimeMenus {
 					eMenu = Interface::Menus::NoMenu;
 
 				if (eMenu != Interface::Menus::NoMenu) {
-					switch (eMenu) {
-						case Interface::Menus::Container:
-							if (!Settings::bBackgroundBlurInContainers)
-								return nullptr;
-							break;
-						case Interface::Menus::Barter:
-							if (!Settings::bBackgroundBlurInBarter)
-								return nullptr;
-							break;
-						case Interface::Menus::VendorRepair:
-							if (!Settings::bBackgroundBlurInServiceRepair)
-								return nullptr;
-							break;
-						case Interface::Menus::Recipe:
-							if (!Settings::bBackgroundBlurInRecipeMenu)
-								return nullptr;
-							break;
-						case Interface::Menus::Hacking:
-						case Interface::Menus::Computers:
-							if (!Settings::bBackgroundBlurInComputerMenu)
-								return nullptr;
-							break;
-						case Interface::Menus::CompanionWheel:
-							if (!Settings::bBackgroundBlurInCompanionWheel)
-								return nullptr;
-							break;
-						default:
-							break;
-					}
+					if (!Settings::IsMenuBackgroundBlurred(eMenu))
+						return nullptr;
 				}
 				else {
-					if (!Settings::bBackgroundBlurInContainers) {
+					if (!Settings::IsMenuBackgroundBlurred(Interface::Menus::Container)) {
 						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Container))
 							return nullptr;
 					}
 
-					if (!Settings::bBackgroundBlurInBarter) {
+					if (!Settings::IsMenuBackgroundBlurred(Interface::Menus::Barter)) {
 						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Barter))
 							return nullptr;
 					}
 
-					if (!Settings::bBackgroundBlurInServiceRepair) {
+					if (!Settings::IsMenuBackgroundBlurred(Interface::Menus::VendorRepair)) {
 						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::VendorRepair))
 							return nullptr;
 					}
 
-					if (!Settings::bBackgroundBlurInRecipeMenu) {
+					if (!Settings::IsMenuBackgroundBlurred(Interface::Menus::Recipe)) {
 						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Recipe))
 							return nullptr;
 					}
 
-					if (!Settings::bBackgroundBlurInComputerMenu) {
+					if (!Settings::IsMenuBackgroundBlurred(Interface::Menus::Computers)) {
 						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::Hacking)
 							|| Utils::IsLiveMenuInstanceAlive(Interface::Menus::Computers))
 							return nullptr;
 					}
 
-					if (!Settings::bBackgroundBlurInCompanionWheel) {
+					if (!Settings::IsMenuBackgroundBlurred(Interface::Menus::CompanionWheel)) {
 						if (Utils::IsLiveMenuInstanceAlive(Interface::Menus::CompanionWheel))
 							return nullptr;
 					}

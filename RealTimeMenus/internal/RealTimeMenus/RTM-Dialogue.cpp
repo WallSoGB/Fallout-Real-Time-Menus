@@ -508,7 +508,7 @@ namespace RealTimeMenus {
 
 			WriteRelJump(0x8E8DC8, ShouldWaitForTargetInDialogue_Asm);
 
-			if (!Settings::bPauseDialogue) {
+			if (!Settings::IsMenuPaused(Interface::Dialog)) {
 				Hook_FakeInDialogue<0x4537C9>(); // TES::UpdateCellMainThread
 				Hook_FakeInDialogue<0x86E6E7>(); // TESMain::OnIdle
 				Hook_FakeInDialogue<0x86E7CE>(); // TESMain::OnIdle
@@ -572,8 +572,24 @@ namespace RealTimeMenus {
 					Hook_IsInvulnerable<0x1087024, false>(); // Make speaker invulnerable in dialogue
 				}
 
-				if (Settings::b3DVoiceInDialogue) {
-					SafeWrite8(0x8A5714 + 1, 0); // Play dialogue in 3D
+				HMODULE hEnhancedCamera = GetModuleHandleA("NVSE_EnhancedCamera.dll");
+				if (hEnhancedCamera) {
+					if (*reinterpret_cast<uint16_t*>(Utils::GetDLLAddress(hEnhancedCamera, 0x10019B75)) == 0x5175) {
+						_MESSAGE("Patching Enhanced Camera for Real Time Menus - Dialogue support");
+						// UpdateCamera
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019B75), 2);
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019B7E), 2);
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019D36), 6);
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019D43), 6);
+
+						// UpdateActorAnim
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A551), 6);
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A55E), 6);
+
+						// TranslateThirdPerson
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A758), 6);
+						PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A765), 6);
+					}
 				}
 			}
 
@@ -587,31 +603,6 @@ namespace RealTimeMenus {
 			if (Settings::bNoDialogueZoom) {
 				WriteRelJump(0x9533BE, 0x953562);
 				SafeWrite8(0x953BBA, 0xEB);
-			}
-
-
-			HMODULE hEnhancedCamera = GetModuleHandleA("NVSE_EnhancedCamera.dll");
-			if (!Settings::bPauseDialogue && hEnhancedCamera) {
-				if (*reinterpret_cast<uint16_t*>(Utils::GetDLLAddress(hEnhancedCamera, 0x10019B75)) == 0x5175) {
-					_MESSAGE("Patching Enhanced Camera for Real Time Menus - Dialogue support");
-					// UpdateCamera
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019B75), 2);
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019B7E), 2);
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019D36), 6);
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x10019D43), 6);
-
-					// UpdateActorAnim
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A551), 6);
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A55E), 6);
-
-					// TranslateThirdPerson
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A758), 6);
-					PatchMemoryNop(Utils::GetDLLAddress(hEnhancedCamera, 0x1001A765), 6);
-				}
-				else {
-					MessageBoxA(nullptr, "Real Time Menus detected an outdated version of Enhanced Camera.\nPlease update to the 1.4f version from Nexus Mods.\nThe mod page is called \"New Vegas - Enhanced Camera - Detached head hotfix\"", "Real Time Menus", MB_OK | MB_ICONERROR);
-					ExitProcess(0);
-				}
 			}
 		}
 

@@ -2,37 +2,24 @@
 
 #include "simpleini/SimpleIni.h"
 
+#include "Bethesda/Interface.hpp"
+
 namespace RealTimeMenus {
 
 	namespace Settings {
+
+		struct MenuSetting {
+			bool bPause			 : 1 = true;
+			bool bBackgroundBlur : 1 = true;
+		};
+
+		MenuSetting kPipBoyMenuSetting = {};
+		MenuSetting kMenuSettings[100] = {};
 
 		// Main
 		bool bNoHardcoreInMenus = true;
 		bool bControllerRumbleInMenus = false;
 		uint32_t uiCompanionMenuHandling = 0;
-
-		// Menus
-		bool bPauseContainers = false;
-		bool bPauseBarter = false;
-		bool bPauseServiceRepair = false;
-		bool bPauseRecipeMenu = false;
-		bool bPauseLockPickMenu = false;
-		bool bPauseComputerMenu = false;
-		bool bPauseUtilityMenus = true;
-		bool bPauseCompanionWheel = false;
-		bool bPausePipBoy = false;
-		bool bPauseDialogue = false;
-		bool bPauseVATS = false;
-
-		// Backgrounds
-		bool bBackgroundBlurInContainers = true;
-		bool bBackgroundBlurInBarter = true;
-		bool bBackgroundBlurInServiceRepair = true;
-		bool bBackgroundBlurInRecipeMenu = true;
-		bool bBackgroundBlurInLockPickMenu = true;
-		bool bBackgroundBlurInComputerMenu = true;
-		bool bBackgroundBlurInCompanionWheel = true;
-		bool bBackgroundBlurInPipBoy = true;
 
 		// PipBoy
 		bool bShakeCameraInPipBoy = true;
@@ -72,23 +59,26 @@ namespace RealTimeMenus {
 			Settings::uiCompanionMenuHandling			= kINI.GetLongValue("Main", "uiCompanionMenuHandling", 0);
 
 			// Menus
-			Settings::bPauseContainers					= kINI.GetBoolValue("Menus", "bPauseContainers", false);
-			Settings::bPauseBarter						= kINI.GetBoolValue("Menus", "bPauseBarter", false);
-			Settings::bPauseServiceRepair				= kINI.GetBoolValue("Menus", "bPauseServiceRepair", false);
-			Settings::bPauseRecipeMenu					= kINI.GetBoolValue("Menus", "bPauseRecipeMenu", false);
-			Settings::bPauseLockPickMenu				= kINI.GetBoolValue("Menus", "bPauseLockPickMenu", false);
-			Settings::bPauseComputerMenu				= kINI.GetBoolValue("Menus", "bPauseComputerMenu", false);
-			Settings::bPauseCompanionWheel				= kINI.GetBoolValue("Menus", "bPauseCompanionWheel", false);
-			Settings::bPausePipBoy						= kINI.GetBoolValue("Menus", "bPausePipBoy", false);
-			Settings::bPauseDialogue					= kINI.GetBoolValue("Menus", "bPauseDialogue", false);
-			Settings::bPauseVATS						= kINI.GetBoolValue("Menus", "bPauseVATS", false);
+			Settings::SetMenuPaused(Interface::Container,		kINI.GetBoolValue("Menus", "bPauseContainers", false));
+			Settings::SetMenuPaused(Interface::Barter,			kINI.GetBoolValue("Menus", "bPauseBarter", false));
+			Settings::SetMenuPaused(Interface::VendorRepair,	kINI.GetBoolValue("Menus", "bPauseServiceRepair", false));
+			Settings::SetMenuPaused(Interface::Recipe,			kINI.GetBoolValue("Menus", "bPauseRecipeMenu", false));
+			Settings::SetMenuPaused(Interface::LockPick,		kINI.GetBoolValue("Menus", "bPauseLockPickMenu", false));
+			Settings::SetMenuPaused(Interface::Computers,		kINI.GetBoolValue("Menus", "bPauseComputerMenu", false));
+			Settings::SetMenuPaused(Interface::CompanionWheel,	kINI.GetBoolValue("Menus", "bPauseCompanionWheel", false));
+			Settings::SetMenuPaused(Interface::PipBoy,			kINI.GetBoolValue("Menus", "bPausePipBoy", false));
+			Settings::SetMenuPaused(Interface::Dialog,			kINI.GetBoolValue("Menus", "bPauseDialogue", false));
+			Settings::SetMenuPaused(Interface::VATS,			kINI.GetBoolValue("Menus", "bPauseVATS", false));
 
 			// Backgrounds
-			Settings::bBackgroundBlurInContainers		= kINI.GetBoolValue("Backgrounds", "bBackgroundBlurInContainers", true);
-			Settings::bBackgroundBlurInLockPickMenu		= kINI.GetBoolValue("Backgrounds", "bBackgroundBlurInLockPickMenu", true);
-			Settings::bBackgroundBlurInComputerMenu		= kINI.GetBoolValue("Backgrounds", "bBackgroundBlurInComputerMenu", true);
-			Settings::bBackgroundBlurInCompanionWheel	= kINI.GetBoolValue("Backgrounds", "bBackgroundBlurInCompanionWheel", true);
-			Settings::bBackgroundBlurInPipBoy			= kINI.GetBoolValue("Backgrounds", "bBackgroundBlurInPipBoy", true);
+			Settings::SetMenuBackgroundBlur(Interface::Container,		kINI.GetBoolValue("Backgrounds", "bBlurBackgroundContainers", false));
+			Settings::SetMenuBackgroundBlur(Interface::Barter,			kINI.GetBoolValue("Backgrounds", "bBlurBackgroundBarter", false));
+			Settings::SetMenuBackgroundBlur(Interface::VendorRepair,	kINI.GetBoolValue("Backgrounds", "bBlurBackgroundServiceRepair", false));
+			Settings::SetMenuBackgroundBlur(Interface::Recipe,			kINI.GetBoolValue("Backgrounds", "bBlurBackgroundRecipeMenu", false));
+			Settings::SetMenuBackgroundBlur(Interface::LockPick,		kINI.GetBoolValue("Backgrounds", "bBlurBackgroundLockPickMenu", false));
+			Settings::SetMenuBackgroundBlur(Interface::Computers,		kINI.GetBoolValue("Backgrounds", "bBlurBackgroundComputerMenu", false));
+			Settings::SetMenuBackgroundBlur(Interface::CompanionWheel,	kINI.GetBoolValue("Backgrounds", "bBlurBackgroundCompanionWheel", false));
+			Settings::SetMenuBackgroundBlur(Interface::PipBoy,			kINI.GetBoolValue("Backgrounds", "bBlurBackgroundPipBoy", false));
 
 			// PipBoy
 			Settings::bShakeCameraInPipBoy				= kINI.GetBoolValue("PipBoy", "bShakeCameraInPipBoy", true);
@@ -112,6 +102,38 @@ namespace RealTimeMenus {
 			Settings::bGameModeInDialogue				= kINI.GetBoolValue("Dialogue", "bGameModeInDialogue", false);
 			Settings::bMenuModeForSpeakersOnly			= kINI.GetBoolValue("Dialogue", "bMenuModeForSpeakersOnly", true);
 			Settings::bMenuModeForActorsOnly			= kINI.GetBoolValue("Dialogue", "bMenuModeForActorsOnly", false);
+		}
+
+		static inline MenuSetting& GetMenuSetting(uint32_t aeMenu) {
+			switch (aeMenu) {
+				case Interface::MainFour:
+				case Interface::Inventory:
+				case Interface::Stats:
+				case Interface::PipboyData:
+				case Interface::PipboyRepair:
+				case Interface::ItemModMenu:
+					return kPipBoyMenuSetting;
+				case Interface::Hacking:
+					return kMenuSettings[Interface::Computers - 1000];
+				default:
+					return kMenuSettings[aeMenu - 1000];
+			}
+		}
+
+		void SetMenuPaused(uint32_t aeMenu, bool abPaused) {
+			GetMenuSetting(aeMenu).bPause = abPaused;
+		}
+
+		bool IsMenuPaused(uint32_t aeMenu) {
+			return GetMenuSetting(aeMenu).bPause;
+		}
+
+		void SetMenuBackgroundBlur(uint32_t aeMenu, bool abBlurred) {
+			GetMenuSetting(aeMenu).bBackgroundBlur = abBlurred;
+		}
+
+		bool IsMenuBackgroundBlurred(uint32_t aeMenu) {
+			return GetMenuSetting(aeMenu).bBackgroundBlur;
 		}
 
 	}

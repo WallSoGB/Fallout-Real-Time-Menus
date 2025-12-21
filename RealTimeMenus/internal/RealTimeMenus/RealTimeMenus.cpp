@@ -246,11 +246,11 @@ namespace RealTimeMenus {
 					auto eType = pBase->GetFormType();
 					switch (eType) {
 						case FORM_TYPE::TESObjectCONT:
-							if (!Settings::bPauseContainers)
+							if (!Settings::IsMenuPaused(Interface::Container))
 								return 0;
 							break;
 						case FORM_TYPE::BGSTerminal:
-							if (!Settings::bPauseComputerMenu)
+							if (!Settings::IsMenuPaused(Interface::Computers))
 								return 0;
 							break;
 						default:
@@ -350,7 +350,7 @@ namespace RealTimeMenus {
 		WriteRelJump(0x70BAA1, 0x70BB7E);
 
 		// Don't deactivate the "Open" anim sequences for activated references, because it'd reset soon after opening the menu (they expect menu to pause the game)
-		if (!Settings::bPauseContainers || !Settings::bPauseComputerMenu)
+		if (!Settings::IsMenuPaused(Interface::Container) || !Settings::IsMenuPaused(Interface::Computers))
 			WriteRelJump(0x567187, DeactivateSequenceHook_Asm);
 
 		if (Settings::bShowHandsInVATS)
