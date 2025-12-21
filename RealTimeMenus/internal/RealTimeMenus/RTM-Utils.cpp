@@ -74,50 +74,41 @@ namespace RealTimeMenus {
 		}
 
 		bool IsAnyLiveMenuInstanceAlive(bool abGameModeCheck = false) {
-			if (!Settings::IsMenuPaused(Interface::PipBoy) && Interface::IsInPipBoy())
+			if (!Settings::IsMenuPaused(Interface::PipBoy) && IsLiveMenuInstanceAlive(Interface::PipBoy))
+				return true;
+
+			if (!Settings::IsMenuPaused(Interface::Container) && IsLiveMenuInstanceAlive(Interface::Container))
+				return true;
+
+			if (!Settings::IsMenuPaused(Interface::Barter) && IsLiveMenuInstanceAlive(Interface::Barter))
+				return true;
+
+			if (!Settings::IsMenuPaused(Interface::VendorRepair) && IsLiveMenuInstanceAlive(Interface::VendorRepair))
+				return true;
+
+			if (!Settings::IsMenuPaused(Interface::Recipe) && IsLiveMenuInstanceAlive(Interface::Recipe))
+				return true;
+
+			if (!Settings::IsMenuPaused(Interface::CompanionWheel) && IsLiveMenuInstanceAlive(Interface::CompanionWheel))
 				return true;
 
 			if (!Settings::IsMenuPaused(Interface::Dialog) && (!abGameModeCheck || Settings::bGameModeInDialogue)) {
-				if (DialogMenu::GetSingleton())
+				if (IsLiveMenuInstanceAlive(Interface::Dialog))
 					return true;
 			}
 
-			if (!Settings::IsMenuPaused(Interface::Container)) {
-				if (ContainerMenu::GetSingleton())
-					return true;
-			}
-
-			if (!Settings::IsMenuPaused(Interface::Barter)) {
-				if (BarterMenu::GetSingleton())
-					return true;
-			}
-
-
-			if (!Settings::IsMenuPaused(Interface::VendorRepair)) {
-				if (RepairServicesMenu::GetSingleton())
-					return true;
-			}
-
-			if (!Settings::IsMenuPaused(Interface::Recipe)) {
-				if (RecipeMenu::GetSingleton())
-					return true;
-			}
-
-			if (!Settings::IsMenuPaused(Interface::LockPick) && LockPickMenu::GetSingleton())
+			if (!Settings::IsMenuPaused(Interface::LockPick) && IsLiveMenuInstanceAlive(Interface::LockPick))
 				return true;
 
-			if (!Settings::IsMenuPaused(Interface::VATS) && VATSMenu::GetSingleton())
+			if (!Settings::IsMenuPaused(Interface::VATS) && IsLiveMenuInstanceAlive(Interface::VATS))
 				return true;
 
 			if (!Settings::IsMenuPaused(Interface::Computers)) {
-				if (HackingMenu::GetSingleton())
+				if (IsLiveMenuInstanceAlive(Interface::Computers))
 					return true;
-				if (ComputersMenu::GetSingleton())
+				if (IsLiveMenuInstanceAlive(Interface::Hacking))
 					return true;
 			}
-
-			if (!Settings::IsMenuPaused(Interface::CompanionWheel) && CompanionWheelMenu::GetSingleton())
-				return true;
 
 			return false;
 		}
@@ -131,8 +122,14 @@ namespace RealTimeMenus {
 						return MenuPauseState::MENU_PAUSED;
 #if HANLDE_QUANTITY_MENU
 				case Interface::Menus::Quantity:
-					if (abCheckInstances)
-						return IsLiveMenu(Interface::Menus::NoMenu, abCheckInstances, abGameModeCheck);
+					if (abCheckInstances) {
+						// Check parent menus in the stack to inherit the state
+						for (uint32_t i = 1; i < 10; i++) {
+							uint32_t eMenu = InterfaceManager::GetSingleton()->GetEnterStack(i);
+							if (eMenu != Interface::Menus::Quantity)
+								return IsLiveMenu(eMenu, abCheckInstances, abGameModeCheck);
+						}
+					}
 					return MenuPauseState::MENU_PAUSED;
 #endif
 				case Interface::Menus::Dialog:
