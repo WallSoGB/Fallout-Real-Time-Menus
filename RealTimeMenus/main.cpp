@@ -3,7 +3,7 @@
 #include "shared/NVSEManager/NVSEGlobalManager.hpp"
 
 constexpr char const* PLUGIN_NAME = "Real Time Menus";
-constexpr uint32_t PLUGIN_VERSION = 103;
+constexpr uint32_t PLUGIN_VERSION = 104;
 
 #include "shared/BSMemory/BSMemory.hpp"
 BS_ALLOCATORS
