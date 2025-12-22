@@ -304,6 +304,9 @@ namespace RealTimeMenus {
 		RealTimeMenus::PipBoy::InitHooks();
 		RealTimeMenus::Dialogue::InitHooks();
 		RealTimeMenus::VATS::InitHooks();
+
+		// Hook this one early so other mods can read it back if needed
+		Hook_FakeMenuMode<0x63E0F8>(); // SkySound::Play
 	}
 
 	void InitDeferredHooks() {
@@ -326,7 +329,6 @@ namespace RealTimeMenus {
 		SafeWriteBuf(0x94E141, "\xD9\x45\xF8\x90\x90\x90", 6); // Make sky update with correct delta in sleep/wait
 		ReplaceCallEx(0x94E157, &Hook::WaitSkyUpdate); // Run animations and particles in sleep/wait
 
-		Hook_FakeMenuMode<0x63E0F8>(); // SkySound::Play
 		Hook_FakeMenuMode<0x837D05>(); // ImpactMixer::PlayFootstep
 		Hook_FakeMenuMode<0x8387C5>(); // ImpactMixer::PlayJumpSound
 		Hook_FakeMenuMode<0x86A4A1>(); // BSShaderManager::CalculateTime
