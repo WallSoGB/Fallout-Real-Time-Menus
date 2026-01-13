@@ -1,4 +1,5 @@
 #include "RTM-Utils.hpp"
+#include "RTM-Rendering.hpp"
 #include "RTM-Settings.hpp"
 
 #include "Bethesda/BarterMenu.hpp"
@@ -188,6 +189,10 @@ namespace RealTimeMenus {
 			}
 
 			return false;
+		}
+
+		ImageSpaceStage GetImageSpaceStage() {
+			return Rendering::kImageSpaceStage;
 		}
 
 		TESForm* GetCurrentMenuBackgroundFX() {

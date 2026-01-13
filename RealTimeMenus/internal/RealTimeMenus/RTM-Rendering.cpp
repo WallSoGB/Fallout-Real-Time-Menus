@@ -30,6 +30,8 @@ namespace RealTimeMenus {
 		bool bUIUpdated = false;
 		bool bCanClearScreenSplatter = true;
 
+		Utils::ImageSpaceStage kImageSpaceStage = Utils::IS_NONE;
+
 		namespace {
 			// If true, UI can run on the background thread
 			static bool CanMultithreadUI() {
@@ -73,9 +75,12 @@ namespace RealTimeMenus {
 		private:
 			static inline CallDetour kDetour;
 			void DrawWorld(void* apTexture, bool abRenderedMenu, bool abPipboyMode) {
+				kImageSpaceStage = Utils::IS_FG;
+
 				if (abRenderedMenu) {
 					if (ShouldUseNormalRenderPath()) {
 						ThisCall(kDetour.GetOverwrittenAddr(), this, apTexture, abRenderedMenu, abPipboyMode);
+						kImageSpaceStage = Utils::IS_NONE;
 						return;
 					}
 				}
@@ -91,6 +96,8 @@ namespace RealTimeMenus {
 					&& !Interface::IsMenuIDVisible(Interface::Menus::VATS, 11)
 					&& !Interface::IsInPipBoy()
 					&& !Interface::IsConsoleVisible()) {
+
+					kImageSpaceStage = Utils::IS_BG;
 
 					bBlur = true;
 
@@ -115,6 +122,8 @@ namespace RealTimeMenus {
 
 					ImageSpaceManager::bEOFEnabled = bEOF;
 				}
+
+				kImageSpaceStage = Utils::IS_NONE;
 			}
 		public:
 			Hook_BlurredDrawWorld() {
@@ -158,6 +167,8 @@ namespace RealTimeMenus {
 					return;
 				}
 
+				kImageSpaceStage = Utils::IS_BG;
+
 				pThis->DrawWorld_Init();
 				pThis->DrawWorld_UpdateWater();
 				BSRenderedTexture* pCurrentRT = pThis->DrawWorld_InitRenderTexture(pRenderer, apCustomRenderTarget, false, bIsMSAA);
@@ -198,6 +209,8 @@ namespace RealTimeMenus {
 				bCanClearScreenSplatter = true;
 
 				pThis->DrawWorld_RestartRenderTexture(apMainTarget, false, NiRenderer::CLEAR_ZBUFFER);
+
+				kImageSpaceStage = Utils::IS_NONE;
 			}
 
 			void DrawImageSpaceAndScrenSplatter(BOOL abMSAA, class BSRenderedTexture* apRenderTarget, class NiDX9Renderer* apRenderer, class BSRenderedTexture* apDestination) {
