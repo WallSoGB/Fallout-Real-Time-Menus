@@ -37,8 +37,12 @@ namespace RealTimeMenus {
 			Info		uValue;
 			const char* pKey;
 
-			void Initialize(const char* apName, float value) {
-				ThisCall(0x40C150, this, apName, value);
+			void Initialize(const char* apName, float afValue) {
+				ThisCall(0x40E0B0, this, apName, afValue);
+			}
+
+			void Initialize(const char* apName, int32_t aiValue) {
+				ThisCall(0x40C150, this, apName, aiValue);
 			}
 
 			float Float() const {
