@@ -39,9 +39,9 @@ void TESMain::DrawWorld_DrawScene(Sun* apSun, bool abRenderHands, bool abIsWiref
 	ThisCall(0x873200, this, apSun, abRenderHands, abIsWireframe, abVATSQuery);
 }
 
-// GAME - 0x875E40
+// GAME - 0x874920
 void TESMain::DrawWorld_Refraction(BSShaderAccumulator* apAccumulator, BSRenderedTexture* apRenderTarget) {
-	ThisCall(0x875E40, this, apAccumulator, apRenderTarget);
+	ThisCall(0x874920, this, apAccumulator, apRenderTarget);
 }
 
 // GAME - 0x875E40
