@@ -45,7 +45,7 @@ void TESMain::DrawWorld_Refraction(BSShaderAccumulator* apAccumulator, BSRendere
 }
 
 // GAME - 0x875E40
-void TESMain::DrawWorld_DepthOfField(BSShaderAccumulator* apAccumulator, BSRenderedTexture* apRenderTarget) {
+void TESMain::DrawWorld_DoDepth(BSShaderAccumulator* apAccumulator, BSRenderedTexture* apRenderTarget) {
 	ThisCall(0x875E40, this, apAccumulator, apRenderTarget);
 }
 

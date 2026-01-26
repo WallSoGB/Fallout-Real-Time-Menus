@@ -29,8 +29,12 @@ namespace RealTimeMenus {
 		bool bCanDoAsyncUI = false;
 		bool bUIUpdated = false;
 		bool bCanClearScreenSplatter = true;
+		bool bRenderingRenderedMenuWorld = false;
+		
+		const Setting::Info iSettingAlwaysFalse(0);
 
-		Utils::ImageSpaceStage kImageSpaceStage = Utils::IS_NONE;
+
+		Utils::ImageSpaceStage eImageSpaceStage = Utils::IS_NONE;
 
 		namespace {
 			// If true, UI can run on the background thread
@@ -50,12 +54,14 @@ namespace RealTimeMenus {
 			void InterfaceUpdateMT() {
 				if (bCanDoAsyncUI && !bUIUpdated) {
 					ThisCall(kDetour.GetOverwrittenAddr(), this);
+					bUIUpdated = true;
 				}
 			}
 
 			void InterfaceUpdateST() {
 				if (!bCanDoAsyncUI && !bUIUpdated) {
 					ThisCall(kDetour.GetOverwrittenAddr(), this);
+					bUIUpdated = true;
 				}
 			}
 
@@ -75,12 +81,12 @@ namespace RealTimeMenus {
 		private:
 			static inline CallDetour kDetour;
 			void DrawWorld(void* apTexture, bool abRenderedMenu, bool abPipboyMode) {
-				kImageSpaceStage = Utils::IS_FG;
+				eImageSpaceStage = Utils::IS_FG;
 
 				if (abRenderedMenu) {
 					if (ShouldUseNormalRenderPath()) {
 						ThisCall(kDetour.GetOverwrittenAddr(), this, apTexture, abRenderedMenu, abPipboyMode);
-						kImageSpaceStage = Utils::IS_NONE;
+						eImageSpaceStage = Utils::IS_NONE;
 						return;
 					}
 				}
@@ -97,7 +103,7 @@ namespace RealTimeMenus {
 					&& !Interface::IsInPipBoy()
 					&& !Interface::IsConsoleVisible()) {
 
-					kImageSpaceStage = Utils::IS_BG;
+					eImageSpaceStage = Utils::IS_BG;
 
 					bBlur = true;
 
@@ -123,7 +129,7 @@ namespace RealTimeMenus {
 					ImageSpaceManager::bEOFEnabled = bEOF;
 				}
 
-				kImageSpaceStage = Utils::IS_NONE;
+				eImageSpaceStage = Utils::IS_NONE;
 			}
 		public:
 			Hook_BlurredDrawWorld() {
@@ -160,55 +166,64 @@ namespace RealTimeMenus {
 				TESMain* pThis = reinterpret_cast<TESMain*>(this);
 				NiDX9Renderer* pRenderer = NiDX9Renderer::GetSingleton();
 				ImageSpaceManager* pISMgr = ImageSpaceManager::GetSingleton();
-				bool bIsMSAA = CdeclCall<bool>(0x4DC310);
+				const bool bIsMSAA = CdeclCall<bool>(0x4DC310);
 
 				if (ShouldUseNormalRenderPath()) {
 					pThis->DrawWorld_CopyMenuBG(pISMgr, pRenderer, bIsMSAA, apCustomRenderTarget);
 					return;
 				}
 
-				kImageSpaceStage = Utils::IS_BG;
+				const bool bWireFrame = ThisCall<bool>(0x870770, BSShaderManager::GetShadowSceneNode(0)); // ShadowSceneNode::IsWireframe
+				if (bWireFrame) {
+					return;
+				}
+
+				eImageSpaceStage = Utils::IS_BG;
 
 				pThis->DrawWorld_Init();
 				pThis->DrawWorld_UpdateWater();
-				BSRenderedTexture* pCurrentRT = pThis->DrawWorld_InitRenderTexture(pRenderer, apCustomRenderTarget, false, bIsMSAA);
+
+				const bool bEOF = ImageSpaceManager::bEOFEnabled;
+
 				TESImageSpaceModifier* pISMod = reinterpret_cast<TESImageSpaceModifier*>(Utils::GetCurrentMenuBackgroundFX());
 
-				bool bEOF = ImageSpaceManager::bEOFEnabled;
+				pThis->DrawWorld_RestartRenderTexture(apMainTarget, bIsMSAA, NiRenderer::CLEAR_ZBUFFER | NiRenderer::CLEAR_BACKBUFFER);
 
 				if (pISMod) {
 					ImageSpaceModifierInstanceForm::Trigger(pISMod, 1.f, nullptr);
-					reinterpret_cast<TESMain*>(this)->UpdateImageSpace(false);
+					pThis->UpdateImageSpace(false);
 					ImageSpaceManager::bEOFEnabled = true;
 				}
 
-				pThis->DrawWorld_DrawScene(nullptr, false, false, false);
+				bRenderingRenderedMenuWorld = true;
+				pThis->DrawWorld_DrawScene(nullptr, false, bWireFrame, false);
+				bRenderingRenderedMenuWorld = false;
+
 				if (BSShaderManager::IsRefractionEnabled()) {
-					if (ThisCall(0xB63A90, pThis->spWorldAccum.m_pObject)) { // BSShaderAccumulator::GetRefractivePassCount
-						pThis->DrawWorld_Refraction(pThis->spWorldAccum.m_pObject, pCurrentRT);
+					if (ThisCall<uint32_t>(0xB63A90, pThis->spWorldAccum.m_pObject)) { // BSShaderAccumulator::GetRefractivePassCount
+						pThis->DrawWorld_Refraction(pThis->spWorldAccum, apMainTarget);
 					}
 				}
 
 				ImageSpaceEffectDepthOfField* pDOF = static_cast<ImageSpaceEffectDepthOfField*>(pISMgr->GetEffect(ImageSpaceManager::IS_EFFECT_DEPTH_OF_FIELD));
 				if (pDOF && pDOF->DoDepth())
-					pThis->DrawWorld_DepthOfField(pThis->spWorldAccum.m_pObject, pCurrentRT);
+					pThis->DrawWorld_DoDepth(pThis->spWorldAccum, apMainTarget);
 
 				if (!BSRenderedTexture::IsOutsideFrame())
 					BSRenderedTexture::StopOffscreen();
 
-				BSShaderManager::RenderImageSpaceEffects(pRenderer, pCurrentRT, apMainTarget);
+				BSShaderManager::pCamera = TESMain::GetWorldSceneGraph()->GetCamera();
+				BSShaderManager::RenderImageSpaceEffects(pRenderer, apMainTarget, apMainTarget);
 
 				if (pISMod) {
 					ImageSpaceModifierInstanceForm::Stop(pISMod);
-					reinterpret_cast<TESMain*>(this)->UpdateImageSpace(false);
+					pThis->UpdateImageSpace(false);
 					ImageSpaceManager::bEOFEnabled = bEOF;
 				}
 
-				BSShaderManager::GetTextureManager()->ReturnRenderedTexture(pCurrentRT);
-
 				pThis->DrawWorld_RestartRenderTexture(apMainTarget, bIsMSAA, NiRenderer::CLEAR_ZBUFFER);
-        
-        kImageSpaceStage = Utils::IS_NONE;
+
+				eImageSpaceStage = Utils::IS_NONE;
 			}
 
 			void DrawImageSpaceAndScrenSplatter(BOOL abMSAA, class BSRenderedTexture* apRenderTarget, class NiDX9Renderer* apRenderer, class BSRenderedTexture* apDestination) {
@@ -232,6 +247,14 @@ namespace RealTimeMenus {
 				}
 
 				CdeclCall(0x8C80E0, true);
+			}
+
+			const Setting::Info* CanResume3DTasks() {
+				Setting* pThis = reinterpret_cast<Setting*>(this);
+				if (bRenderingRenderedMenuWorld)
+					return &iSettingAlwaysFalse;
+
+				return &pThis->uValue;
 			}
 		};
 
@@ -266,6 +289,7 @@ namespace RealTimeMenus {
 			}
 
 			if (!Settings::IsMenuPaused(Interface::PipBoy) || !Settings::IsMenuPaused(Interface::Computers)) {
+				//SafeWriteBuf(0x87085B, "\x6A\x00\x90\x90\x90", 5);
 				PatchMemoryNopRange(0x870876, 0x870884);
 				SafeWriteBuf(0x87087C, "\x90\x90\x90\x90\x90\x90\x52\x50", 8);
 				ReplaceCallEx(0x870887, &Hook::DrawWorld_Standard_Ex); // Call TESMain::DrawWorld_DrawScene in Rendered Menu render, instead of TESMain::DrawWorld_CopyMenuBG
@@ -282,6 +306,7 @@ namespace RealTimeMenus {
 
 			ReplaceCall(0x86EC78, Hook::SetDefer3D);
 			ReplaceCall(0x8702F7, Hook::UpdateOffscreenBuffers);
+			ReplaceCallEx(0x8743B0, &Hook::CanResume3DTasks);
 
 			if (Settings::bScreenBloodInPipBoy) {
 				PatchMemoryNop(0x87110B, 2);

@@ -192,7 +192,7 @@ namespace RealTimeMenus {
 		}
 
 		ImageSpaceStage GetImageSpaceStage() {
-			return Rendering::kImageSpaceStage;
+			return Rendering::eImageSpaceStage;
 		}
 
 		TESForm* GetCurrentMenuBackgroundFX() {

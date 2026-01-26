@@ -8,7 +8,7 @@ namespace RealTimeMenus {
 
 		extern bool						bCanDoAsyncUI;
 		extern bool						bUIUpdated;
-		extern Utils::ImageSpaceStage	kImageSpaceStage;
+		extern Utils::ImageSpaceStage	eImageSpaceStage;
 	
 		void InitHooks();
 		void InitDeferredHooks();

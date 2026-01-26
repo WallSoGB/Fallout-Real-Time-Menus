@@ -66,7 +66,7 @@ public:
 	void DrawWorld_UpdateWater();
 	void DrawWorld_DrawScene(Sun* apSun, bool abRenderHands, bool abIsWireframe, bool abVATSQuery);
 	void DrawWorld_Refraction(BSShaderAccumulator* apAccumulator, BSRenderedTexture* apRenderTarget);
-	void DrawWorld_DepthOfField(BSShaderAccumulator* apAccumulator, BSRenderedTexture* apRenderTarget);
+	void DrawWorld_DoDepth(BSShaderAccumulator* apAccumulator, BSRenderedTexture* apRenderTarget);
 	void DrawWorld_End(BSRenderedTexture* apRenderTarget, ImageSpaceManager* apImageSpaceManager, NiDX9Renderer* apRenderer, Sun* apSun);
 	void DrawWorld_RestartRenderTexture(BSRenderedTexture* apRenderTarget, bool abIsMSAA, uint32_t abClearFlags);
 	void DrawWorld_ScreenSplatter(NiDX9Renderer* apRenderer);
