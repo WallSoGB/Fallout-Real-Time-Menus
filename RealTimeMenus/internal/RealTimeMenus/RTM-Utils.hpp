@@ -30,6 +30,12 @@ namespace RealTimeMenus {
 			MENU_MIXED	= 2, // Does not pause the game, runs only MenuMode
 		};
 
+		enum ImageSpaceStage : uint32_t {
+			IS_NONE = 0, // No IS effects are currently being rendered
+			IS_BG	= 1, // IS effects for the background are being rendered
+			IS_FG	= 2, // IS effects for the foreground are being rendered
+		};
+
 		EXTERN_DLL_EXPORT bool IsLiveMenuInstanceAlive(uint32_t aeMenu);
 
 		EXTERN_DLL_EXPORT MenuPauseState IsLiveMenu(uint32_t aeMenu, bool abCheckInstances, bool abGameModeCheck = false);
@@ -39,6 +45,8 @@ namespace RealTimeMenus {
 
 		// MenuModes that prevent GameMode in scripts
 		EXTERN_DLL_EXPORT bool IsMenuBlockingGameMode();
+
+		EXTERN_DLL_EXPORT ImageSpaceStage GetImageSpaceStage();
 
 		SPEC_NOINLINE TESForm* GetCurrentMenuBackgroundFX();
 
