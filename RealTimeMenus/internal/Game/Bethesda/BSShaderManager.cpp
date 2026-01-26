@@ -1,5 +1,9 @@
 #include "BSShaderManager.hpp"
 
+BSTextureManager* BSShaderManager::GetTextureManager() {
+	return *reinterpret_cast<BSTextureManager**>(0x11F91A8);
+}
+
 // GAME - 0x450B80
 ShadowSceneNode* BSShaderManager::GetShadowSceneNode(uint32_t aeType) {
 #ifdef GAME

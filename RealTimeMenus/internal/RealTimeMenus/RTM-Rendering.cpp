@@ -204,24 +204,17 @@ namespace RealTimeMenus {
 					ImageSpaceManager::bEOFEnabled = bEOF;
 				}
 
-				bCanClearScreenSplatter = !Settings::bScreenBloodInPipBoy && Interface::IsInPipBoy();
-				pThis->DrawWorld_End(pCurrentRT, pISMgr, pRenderer, nullptr);
-				bCanClearScreenSplatter = true;
+				BSShaderManager::GetTextureManager()->ReturnRenderedTexture(pCurrentRT);
 
-				pThis->DrawWorld_RestartRenderTexture(apMainTarget, false, NiRenderer::CLEAR_ZBUFFER);
-
-				kImageSpaceStage = Utils::IS_NONE;
+				pThis->DrawWorld_RestartRenderTexture(apMainTarget, bIsMSAA, NiRenderer::CLEAR_ZBUFFER);
+        
+        kImageSpaceStage = Utils::IS_NONE;
 			}
 
 			void DrawImageSpaceAndScrenSplatter(BOOL abMSAA, class BSRenderedTexture* apRenderTarget, class NiDX9Renderer* apRenderer, class BSRenderedTexture* apDestination) {
 				ThisCall(kRenderScreenSplatterDetour.GetOverwrittenAddr(), this, abMSAA, apRenderTarget, apRenderer, apDestination);
 				if (ScreenCustomSplatter::IsActiveSplatter() || ScreenSplatter::IsActiveSplatter())
 					reinterpret_cast<TESMain*>(this)->DrawWorld_ScreenSplatter(apRenderer);
-			}
-
-			void ClearScreenSplatter() {
-				if (bCanClearScreenSplatter)
-					ThisCall(kClearScreenSplatterDetour.GetOverwrittenAddr(), this);
 			}
 
 			static void UpdateOffscreenBuffers() {
@@ -294,7 +287,6 @@ namespace RealTimeMenus {
 				PatchMemoryNop(0x87110B, 2);
 				PatchMemoryNop(0x7F813B, 13); // Don't set BSShaderBloodSplatter's alpha to 0 on FOPipboyManager open
 				kRenderScreenSplatterDetour.ReplaceCallEx(0x870994, &Hook::DrawImageSpaceAndScrenSplatter);
-				kClearScreenSplatterDetour.ReplaceCallEx(0x8768E5, &Hook::ClearScreenSplatter);
 			}
 		}
 

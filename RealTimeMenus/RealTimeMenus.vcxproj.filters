@@ -250,6 +250,7 @@
     <ClCompile Include="internal\Game\Bethesda\BSAudio.cpp">
       <Filter>internal\Game\Bethesda</Filter>
     </ClCompile>
+    <ClCompile Include="internal\Game\Bethesda\BSTextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\nvse\nvse\CommandTable.h">

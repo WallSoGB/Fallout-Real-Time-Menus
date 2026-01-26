@@ -198,6 +198,7 @@ copy "$(TargetDir)$(TargetName).pdb" "C:\Symbols\$(TargetName).pdb"
     <ClCompile Include="internal\Game\Bethesda\Actor.cpp" />
     <ClCompile Include="internal\Game\Bethesda\BarterMenu.cpp" />
     <ClCompile Include="internal\Game\Bethesda\BGSOpenCloseForm.cpp" />
+    <ClCompile Include="internal\Game\Bethesda\BSTextureManager.cpp" />
     <ClCompile Include="internal\Game\Bethesda\Controls.cpp" />
     <ClCompile Include="internal\Game\Bethesda\BSRenderedTexture.cpp" />
     <ClCompile Include="internal\Game\Bethesda\BSShaderManager.cpp" />
