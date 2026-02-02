@@ -401,6 +401,16 @@ namespace RealTimeMenus {
 					uiFlags |= BSGameSound::TypeFlags::UNKBIT10;
 				return uiFlags;
 			}
+
+			void SetVolume(float afVolume) {
+				BSGameSound* pThis = reinterpret_cast<BSGameSound*>(this);
+				if (pThis->uiTypeFlags.bUnkBit10)
+					pThis->usFaderAttenuation = 0;
+				else if (pThis->uiTypeFlags.bVoice)
+					pThis->usFaderAttenuation = static_cast<uint16_t>(Settings::fDialogueVoiceFadeDecibels * 100.f);
+
+				pThis->SetVolume(afVolume);
+			}
 		};
 
 		bool __fastcall ExcludeCombatTarget(Actor* apActor) {
@@ -464,6 +474,38 @@ namespace RealTimeMenus {
 				mov     ecx, [ebp - 0x298]
 				call	Hook::SetDialogueSoundFlag
 				mov		dword ptr[ebp - 0x240], eax
+				jmp		uiJumpTarget
+			}
+		}
+
+		__declspec(naked) void SetVoiceVolume_FadeOut_Asm() {
+			static constexpr uint32_t uiJumpTarget = 0xAE1C64;
+			__asm {
+				mov     eax, [ebp - 0x1C] // Get Sound
+				mov		ecx, [eax + 0x8]  // Get sound flags
+				and		ecx, 4			  // Test if sound has voice flag
+				jnz		VOICE_SOUND
+				mov     eax, [ebp - 0x218]
+				jmp		EXIT
+				VOICE_SOUND:
+				mov		eax, Settings::fDialogueVoiceFadeDecibels
+				EXIT:
+				jmp		uiJumpTarget
+			}
+		}
+
+		__declspec(naked) void SetVoiceVolume_FadeIn_Asm() {
+			static constexpr uint32_t uiJumpTarget = 0xAE1D63;
+			__asm {
+				mov     edx, [ebp - 0x1C] // Get Sound
+				mov		eax, [edx + 0x8]  // Get sound flags
+				and		eax, 4			  // Test if sound has voice flag
+				jnz		VOICE_SOUND
+				mov     edx, [ebp - 0x228]
+				jmp		EXIT
+				VOICE_SOUND:
+				mov		edx, Settings::fDialogueVoiceFadeDecibels
+				EXIT:
 				jmp		uiJumpTarget
 			}
 		}
@@ -550,6 +592,10 @@ namespace RealTimeMenus {
 				WriteRelJump(0x8A2816, uint32_t(SetDialogueSoundFlag_Asm));
 				SafeWrite8(0x8A567F + 2, 0x5);
 				SafeWrite8(0x7972CA + 2, 0x5);// Holotapes in PipBoy
+				WriteRelJump(0xAE1C5E, SetVoiceVolume_FadeOut_Asm);
+				WriteRelJump(0xAE1D5D, SetVoiceVolume_FadeIn_Asm);
+				WriteRelCallEx(0xADFD44, &Hook::SetVolume);
+				WriteRelCallEx(0xAE0741, &Hook::SetVolume);
 
 				// Update camera and player in dialogue ourselves
 				ReplaceCallEx(0x762E8A, &Hook::Dialogue_FocusOnActor);

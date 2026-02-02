@@ -39,6 +39,7 @@ namespace RealTimeMenus {
 		bool b3rdPersonInDialogue = false;
 		bool bShowHandsInDialogue = true;
 		bool b3DVoiceInDialogue = false;
+		float fDialogueVoiceFadeDecibels = 16.f;
 
 		bool bGameModeInDialogue = false;
 		bool bMenuModeForSpeakersOnly = true;
@@ -98,6 +99,7 @@ namespace RealTimeMenus {
 			Settings::b3rdPersonInDialogue				= kINI.GetBoolValue("Dialogue", "b3rdPersonInDialogue", false);
 			Settings::bShowHandsInDialogue				= kINI.GetBoolValue("Dialogue", "bShowHandsInDialogue", true);
 			Settings::b3DVoiceInDialogue				= kINI.GetBoolValue("Dialogue", "b3DVoiceInDialogue", false);
+			Settings::fDialogueVoiceFadeDecibels		= kINI.GetDoubleValue("Dialogue", "fDialogueVoiceFadeDecibels", 16.0);
 
 			Settings::bGameModeInDialogue				= kINI.GetBoolValue("Dialogue", "bGameModeInDialogue", false);
 			Settings::bMenuModeForSpeakersOnly			= kINI.GetBoolValue("Dialogue", "bMenuModeForSpeakersOnly", true);
