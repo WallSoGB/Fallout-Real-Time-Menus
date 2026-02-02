@@ -485,10 +485,13 @@ namespace RealTimeMenus {
 				mov		ecx, [eax + 0x8]  // Get sound flags
 				and		ecx, 4			  // Test if sound has voice flag
 				jnz		VOICE_SOUND
-				mov     eax, [ebp - 0x218]
+
+				mov     eax, [ebp - 0x218] // Use existing value (fDialogueFadeDecibels)
 				jmp		EXIT
+
 				VOICE_SOUND:
 				mov		eax, Settings::fDialogueVoiceFadeDecibels
+
 				EXIT:
 				jmp		uiJumpTarget
 			}
@@ -501,10 +504,13 @@ namespace RealTimeMenus {
 				mov		eax, [edx + 0x8]  // Get sound flags
 				and		eax, 4			  // Test if sound has voice flag
 				jnz		VOICE_SOUND
-				mov     edx, [ebp - 0x228]
+
+				mov     edx, [ebp - 0x228] // Use existing value (fDialogueFadeDecibels)
 				jmp		EXIT
+
 				VOICE_SOUND:
 				mov		edx, Settings::fDialogueVoiceFadeDecibels
+
 				EXIT:
 				jmp		uiJumpTarget
 			}
