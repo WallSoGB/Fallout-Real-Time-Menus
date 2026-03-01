@@ -608,6 +608,10 @@ namespace RealTimeMenus {
 				ReplaceCallEx(0x762F85, &Hook::Dialogue_FocusOnActor);
 				WriteRelJump(0x953AFA, 0x953BB4); // Disables game's player updates in Dialogue
 
+				// Don't update lights twice while in dialogue (Dialogue updates lights on its own)
+				SafeWrite8(0x8A5E14, 0xEB);
+				SafeWrite8(0x933CEA, 0xEB);
+
 				if (Settings::bStopCombatInDialogue) {
 					// Handle combat AI for actors when in dialogue. Don't attack player, the speaker, player's followers or teammates.
 					ReplaceCallEx(0x97DAAE, &Hook::ShouldStopCombat);
