@@ -219,6 +219,7 @@ copy "$(TargetDir)$(TargetName).pdb" "C:\Symbols\$(TargetName).pdb"
     <ClCompile Include="internal\Game\Gamebryo\NiControllerSequence.cpp" />
     <ClCompile Include="internal\Game\Gamebryo\NiDX9Renderer.cpp" />
     <ClCompile Include="internal\Game\Gamebryo\NiFixedString.cpp" />
+    <ClCompile Include="internal\Game\Gamebryo\NiGlobalStringTable.cpp" />
     <ClCompile Include="internal\Game\Gamebryo\NiNode.cpp" />
     <ClCompile Include="internal\Game\Gamebryo\NiObjectNET.cpp" />
     <ClCompile Include="internal\Game\Gamebryo\NiPoint3.cpp" />

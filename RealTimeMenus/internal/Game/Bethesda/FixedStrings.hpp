@@ -5,8 +5,8 @@ class NiFixedString;
 namespace FixedStrings {
 
 #define REGISTER_STRING(address, name) \
-	static constexpr AddressPtr<NiFixedString*, address> p##name; \
-	static inline const NiFixedString& Get##name() { return *p##name; }; \
+	constexpr inline AddressPtr<NiFixedString*, address> p##name; \
+	inline const NiFixedString& Get##name() { return *p##name; }; \
 
 	REGISTER_STRING(0x11C61A4, Bip01)
 	REGISTER_STRING(0x11C61A8, Bip)
@@ -14,11 +14,17 @@ namespace FixedStrings {
 	REGISTER_STRING(0x11C61B0, Bip01Neck)
 	REGISTER_STRING(0x11C61B4, Bip01Spine)
 	REGISTER_STRING(0x11C61B8, Bip01Spine1)
+	REGISTER_STRING(0x11C61D0, SkinnedDecalNode)
+	REGISTER_STRING(0x11C61D4, DecalNode)
 	REGISTER_STRING(0x11C61DC, Open)
 	REGISTER_STRING(0x11C61E0, Close)
-	REGISTER_STRING(0x11C61E4, Parent)
-	REGISTER_STRING(0x11C61E8, Weapon)
+	REGISTER_STRING(0x11C61E8, Parent)
+	REGISTER_STRING(0x11C61EC, Weapon)
+	REGISTER_STRING(0x11C620C, AttachLight)
+	REGISTER_STRING(0x11C6214, FaceGenEars)
 	REGISTER_STRING(0x11C6224, Grass)
+	REGISTER_STRING(0x11C6240, RaceHeadBiped)
+	REGISTER_STRING(0x11C6244, RaceHeadSkinned)
 	REGISTER_STRING(0x11C625C, Bip01Yaw)
 	REGISTER_STRING(0x11C6260, Bip01Pitch)
 	REGISTER_STRING(0x11C6264, Bip01Looking)

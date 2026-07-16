@@ -22,6 +22,7 @@
 #include "Bethesda/TES.hpp"
 #include "Bethesda/TimeGlobal.hpp"
 #include "Bethesda/DialogMenu.hpp"
+#include "Bethesda/FixedStrings.hpp"
 
 #include "Gamebryo/NiControllerSequence.hpp"
 
@@ -255,7 +256,7 @@ namespace RealTimeMenus {
 			if (pReference == Utils::pActivatedReference) {
 				const TESBoundObject* pBase = pReference->GetObjectReference();
 				const char* pSequenceName = apSequence->GetName();
-				if (pBase && pSequenceName && strcmp(pSequenceName, "Open") == 0) {
+				if (pBase && pSequenceName && pSequenceName == FixedStrings::GetOpen()) {
 					auto eType = pBase->GetFormType();
 					switch (eType) {
 						case FORM_TYPE::TESObjectCONT:
