@@ -129,6 +129,7 @@ namespace RealTimeMenus {
 		template<uint32_t uiAddress, bool bMainThread>
 		class Hook_InterfaceUpdate {
 			static inline HookUtils::CallDetour kDetour;
+
 			void InterfaceUpdateMT() {
 				if (bCanDoAsyncUI && !bUIUpdated) {
 					ThisCall(kDetour, this);
@@ -158,7 +159,8 @@ namespace RealTimeMenus {
 		class Hook_BlurredDrawWorld {
 		private:
 			static inline HookUtils::CallDetour kDetour;
-			void DrawWorld(void* apTexture, bool abRenderedMenu, bool abPipboyMode) {
+
+			void Hook(void* apTexture, bool abRenderedMenu, bool abPipboyMode) {
 				eImageSpaceStage = Utils::IS_FG;
 
 				if (abRenderedMenu) {
@@ -209,9 +211,10 @@ namespace RealTimeMenus {
 
 				eImageSpaceStage = Utils::IS_NONE;
 			}
+
 		public:
 			Hook_BlurredDrawWorld() {
-				kDetour.ReplaceCall(uiAddress, &Hook_BlurredDrawWorld::DrawWorld);
+				kDetour.ReplaceCall(uiAddress, &Hook_BlurredDrawWorld::Hook);
 			}
 		};
 

@@ -62,7 +62,8 @@ namespace RealTimeMenus {
 	template<uint32_t uiAddress>
 	class Hook_FakeMenuMode {
 		static inline HookUtils::CallDetour kDetour;
-		static bool IsMenuMode() {
+
+		static bool Hook() {
 			const uint32_t uiOverwrittenAddr = kDetour;
 			if (uiOverwrittenAddr != 0x702360)
 				CdeclCall(uiOverwrittenAddr);
@@ -70,19 +71,22 @@ namespace RealTimeMenus {
 			[[msvc::noinline_calls]]
 			return RealTimeMenus::Utils::IsMenuPausingGame();
 		}
+
 	public:
 		Hook_FakeMenuMode() {
-			kDetour.ReplaceCall(uiAddress, IsMenuMode);
+			kDetour.ReplaceCall(uiAddress, Hook_FakeMenuMode::Hook);
 		};
 	};
 
 	template<uint32_t uiAddress>
 	class Hook_CanSendOnTriggerEvents {
 		static inline HookUtils::CallDetour kDetour;
-		static TESForm* CanSendEvent(void* apArg) {
+
+		static TESForm* Hook(void* apArg) {
 			TESForm* pForm = CdeclCall<TESForm*>(kDetour, apArg);
 			return IsTriggerDisallowedForForm(pForm);
 		}
+
 	public:
 		Hook_CanSendOnTriggerEvents() {
 			kDetour.ReplaceCall(uiAddress, CanSendEvent);
@@ -92,16 +96,18 @@ namespace RealTimeMenus {
 	template<uint32_t uiAddress>
 	class Hook_TrackActivatedReference {
 		static inline HookUtils::CallDetour kDetour;
-		bool GrabActivatedRef() {
+
+		bool Hook() {
 			bool bNoActivate = ThisCall<bool>(kDetour, this); // PlayerCharacter::GetPreventActivate
 			if (!bNoActivate) {
 				SetActivatedRefrence();
 			}
 			return bNoActivate;
 		}
+
 	public:
 		Hook_TrackActivatedReference() {
-			kDetour.ReplaceCall(uiAddress, &Hook_TrackActivatedReference::GrabActivatedRef);
+			kDetour.ReplaceCall(uiAddress, &Hook_TrackActivatedReference::Hook);
 		};
 	};
 

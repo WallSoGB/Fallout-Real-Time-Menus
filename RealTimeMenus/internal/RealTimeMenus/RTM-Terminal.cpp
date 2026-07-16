@@ -17,7 +17,6 @@ namespace RealTimeMenus {
 		HookUtils::CallDetour kDestroyComputersMenuDetour;
 		HookUtils::CallDetour kDestroyHackingMenuDetour;
 		HookUtils::CallDetour kFixHackingMenuDetour;
-
 		class Hook {
 		public:
 			void DestroyComputersMenu() {

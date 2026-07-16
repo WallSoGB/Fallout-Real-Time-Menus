@@ -212,6 +212,7 @@ namespace RealTimeMenus {
 
 				return ThisCall<BaseProcess*>(kDetour, pActor);
 			}
+
 		public:
 			Hook_CanBeActivated() {
 				kDetour.ReplaceCall(uiAddress, &Hook_CanBeActivated::Hook);
@@ -289,6 +290,7 @@ namespace RealTimeMenus {
 
 				return pActor->IsInDialoguewithPlayer() == false;
 			}
+
 		public:
 			Hook_CanUpdateActor() {
 				kDetour.ReplaceVirtualCall(uiAddress, &Hook_CanUpdateActor::Hook, 8);
@@ -311,6 +313,7 @@ namespace RealTimeMenus {
 				else
 					pThis->SetVolume(afVolume);
 			}
+
 		public:
 			Hook_SetVoiceVolume() {
 				kDetour.ReplaceVirtualCall(uiAddress, &Hook_SetVoiceVolume::Hook, 5);

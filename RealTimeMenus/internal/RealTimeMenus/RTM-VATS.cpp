@@ -79,6 +79,7 @@ namespace RealTimeMenus {
 			void Hook(float afMult, bool abNow) {
 				ThisCall(kDetour, this, RestoreGlobalTimeMultiplier(afMult), abNow);
 			}
+
 		public:
 			Hook_RestoreTimeMultiplier() {
 				kDetour.ReplaceCall(uiAddress, &Hook_RestoreTimeMultiplier::Hook);
@@ -103,6 +104,7 @@ namespace RealTimeMenus {
 
 				pThis->eSelectedLimb = eOriginalLimb;
 			}
+
 		public:
 			Hook_DrawTargetToTexture() {
 				kDetour.ReplaceCall(uiAddress, &Hook_DrawTargetToTexture::Hook);
