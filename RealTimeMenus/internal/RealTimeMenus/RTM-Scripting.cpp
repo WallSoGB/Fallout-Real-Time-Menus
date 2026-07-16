@@ -139,7 +139,7 @@ namespace RealTimeMenus {
 			if (bGameMode && Interface::IsInMenuMode() && IsScriptBlocked(apScript))
 				bGameMode = false;
 
-			if (apRef && !Settings::IsMenuPaused(Interface::Dialog) && bGameMode) {
+			if (bGameMode && apRef && !Settings::IsMenuPaused(Interface::Dialog)) {
 				if (Settings::bGameModeInDialogue && Interface::IsInDialog()) {
 					if (apRef->IsActor()) {
 						if (Settings::bMenuModeForSpeakersOnly) {
