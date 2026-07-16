@@ -89,7 +89,7 @@ namespace RealTimeMenus {
 
 	public:
 		Hook_CanSendOnTriggerEvents() {
-			kDetour.ReplaceCall(uiAddress, CanSendEvent);
+			kDetour.ReplaceCall(uiAddress, Hook_CanSendOnTriggerEvents::Hook);
 		};
 	};
 
