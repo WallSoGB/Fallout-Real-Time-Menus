@@ -411,11 +411,11 @@ namespace RealTimeMenus {
 			return false;
 		}
 
-		void __fastcall CloseReference(TESObjectREFR* apReference) {
+		void __fastcall CloseReference(TESObjectREFR* apReference, uint32_t auiHandleActivateAddr) {
 			auto eOpenState = BGSOpenCloseForm::GetOpenState(apReference);
 			if (eOpenState == BGSOpenCloseForm::OpenCloseState::OPEN || eOpenState == BGSOpenCloseForm::OpenCloseState::OPENING)
 				Utils::DeactivateOpenAnim(apReference);
-			BGSOpenCloseForm::HandleActivate(apReference, PlayerCharacter::GetSingleton(), nullptr);
+			CdeclCall(auiHandleActivateAddr, apReference, PlayerCharacter::GetSingleton(), nullptr); // BGSOpenCloseForm::HandleActivate
 		}
 	}
 

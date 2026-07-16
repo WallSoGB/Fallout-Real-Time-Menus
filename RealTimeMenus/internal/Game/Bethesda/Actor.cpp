@@ -54,3 +54,13 @@ void Actor::HandlePostAnimationActions() {
 void Actor::UpdateMagic(bool abSleeping, bool abCompanionMenu) {
 	ThisCall(0x8C3C40, this, abSleeping, abCompanionMenu);
 }
+
+// GAME - 0x8B36F0
+bool Actor::SetPathfindingGoal(TESObjectREFR* apTarget, float afRadius, PathingAvoidNodeArray* apAvoidNodes) {
+	return ThisCall<bool>(0x8B36F0, this, apTarget, afRadius, apAvoidNodes);
+}
+
+// GAME - 0x8B3AD0
+void Actor::ForceStopMoving() {
+	ThisCall(0x8B3AD0, this);
+}

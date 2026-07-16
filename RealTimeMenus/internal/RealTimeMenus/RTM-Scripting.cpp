@@ -183,7 +183,7 @@ namespace RealTimeMenus {
 
 		void ReplaceCommands() {
 			NVSEGlobalManager::GetSingleton().ReplaceScriptFunctions("IsMenuPaused", SCRIPT_FUNC_NAME(IsMenuPaused), CONDITION_FUNC_NAME(IsMenuPaused));
-			WriteRelJump(0x5C42A0, GameMode_Execute);
+			HookUtils::WriteRelJump(0x5C42A0, GameMode_Execute);
 		}
 
 		void LoadBlockFiles() {

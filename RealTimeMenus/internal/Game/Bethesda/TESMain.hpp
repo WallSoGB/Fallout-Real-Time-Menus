@@ -71,7 +71,7 @@ public:
 	void DrawWorld_RestartRenderTexture(BSRenderedTexture* apRenderTarget, bool abIsMSAA, uint32_t abClearFlags);
 	void DrawWorld_ScreenSplatter(NiDX9Renderer* apRenderer);
 	void DrawWorld_UpdateOffscreenBuffers();
-	static void DrawWorld_RenderedMenuInterface();
+	static void UpdateOffscreenInterface();
 	void OnIdle_DoInterfaceIdle();
 };
 

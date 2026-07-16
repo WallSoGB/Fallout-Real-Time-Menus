@@ -30,6 +30,7 @@ class FACTION_RANK;
 class TESNPC;
 class AlchemyItem;
 class BGSPerkEntry;
+class PathingAvoidNodeArray;
 
 struct DispositionModifier {
 	int32_t	iValue;
@@ -300,6 +301,10 @@ public:
 	void HandlePostAnimationActions();
 
 	void UpdateMagic(bool abSleeping, bool abCompanionMenu);
+
+	bool SetPathfindingGoal(TESObjectREFR* apTarget, float afRadius, PathingAvoidNodeArray* apAvoidNodes);
+
+	void ForceStopMoving();
 };
 
 ASSERT_SIZE(Actor, 0x1B4);

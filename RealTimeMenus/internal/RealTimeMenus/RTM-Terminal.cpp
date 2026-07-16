@@ -14,10 +14,9 @@ namespace RealTimeMenus {
 
 	namespace Terminal {
 
-		CallDetour kDestroyComputersMenuDetour;
-		CallDetour kDestroyHackingMenuDetour;
-		CallDetour kFixHackingMenuDetour;
-
+		HookUtils::CallDetour kDestroyComputersMenuDetour;
+		HookUtils::CallDetour kDestroyHackingMenuDetour;
+		HookUtils::CallDetour kFixHackingMenuDetour;
 		class Hook {
 		public:
 			void DestroyComputersMenu() {
@@ -26,7 +25,7 @@ namespace RealTimeMenus {
 				if (pComputerRef && !CdeclCall<bool>(0x501990, pComputerRef) && Utils::HasOpenCloseAnims(pComputerRef, false)) {
 					Utils::CloseReference(pComputerRef);
 				}
-				ThisCall(kDestroyComputersMenuDetour.GetOverwrittenAddr(), this); // Menu destructor
+				ThisCall(kDestroyComputersMenuDetour, this); // Menu destructor
 			}
 
 			void DestroyHackingMenu() {
@@ -35,11 +34,11 @@ namespace RealTimeMenus {
 				if (!ComputersMenu::GetSingleton() && pComputerRef && Utils::HasOpenCloseAnims(pComputerRef, false)) {
 					Utils::CloseReference(pComputerRef);
 				}
-				ThisCall(kDestroyHackingMenuDetour.GetOverwrittenAddr(), this); // Menu destructor
+				ThisCall(kDestroyHackingMenuDetour, this); // Menu destructor
 			}
 
 			Menu* FixHackingMenu() {
-				ThisCall(kFixHackingMenuDetour.GetOverwrittenAddr(), this);
+				ThisCall(kFixHackingMenuDetour, this);
 				HackingMenu* pMenu = reinterpret_cast<HackingMenu*>(this);
 				pMenu->pTargetRef = nullptr;
 				pMenu->pTargetBaseRef = nullptr;
@@ -62,18 +61,16 @@ namespace RealTimeMenus {
 	namespace Terminal {
 
 		void InitHooks() {
-
+			// Fix hacking menu not initializing form pointers to 0
+			kFixHackingMenuDetour.ReplaceCall(0x76551B, &Hook::FixHackingMenu);
 		}
 
 		void InitDeferredHooks() {
-			// Fix hacking menu not initializing form pointers to 0
-			kFixHackingMenuDetour.ReplaceCallEx(0x76551B, &Hook::FixHackingMenu);
-
 			if (!Settings::IsMenuPaused(Interface::Computers)) {
 				// Play terminal close anim on menu close
-				PatchMemoryNop(0x501724, 5);
-				kDestroyComputersMenuDetour.ReplaceCallEx(0x757B54, &Hook::DestroyComputersMenu);
-				kDestroyHackingMenuDetour.ReplaceCallEx(0x765B2C, &Hook::DestroyHackingMenu);
+				HookUtils::PatchMemoryNop(0x501724, 5);
+				kDestroyComputersMenuDetour.ReplaceCall(0x757B54, &Hook::DestroyComputersMenu);
+				kDestroyHackingMenuDetour.ReplaceCall(0x765B2C, &Hook::DestroyHackingMenu);
 			}
 		}
 
