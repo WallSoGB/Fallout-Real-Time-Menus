@@ -63,27 +63,59 @@ namespace RealTimeMenus {
 		float fTileSafeZoneX = 60.f;
 		float fTileSafeZoneY = 50.f;
 
-		class Hook {
+		static SPEC_NOINLINE float __cdecl RestoreGlobalTimeMultiplier(float afMult) {
+			if (bTimeScaleChanged) {
+				afMult = fOriginalTimeScale;
+				if (bExiting)
+					bTimeScaleChanged = false;
+			}
+			return afMult;
+		}
+
+		template<uint32_t uiAddress>
+		class Hook_RestoreTimeMultiplier {
+			static inline HookUtils::CallDetour kDetour;
+
+			void Hook(float afMult, bool abNow) {
+				ThisCall(kDetour, this, RestoreGlobalTimeMultiplier(afMult), abNow);
+			}
 		public:
+			Hook_RestoreTimeMultiplier() {
+				kDetour.ReplaceCall(uiAddress, &Hook_RestoreTimeMultiplier::Hook);
+			}
+		};
+
+		template<uint32_t uiAddress>
+		class Hook_DrawTargetToTexture {
+			static inline HookUtils::CallDetour kDetour;
+
 			// Runs twice per frame
-			void RenderQueriesAndMask(BSRenderedTexture* apCurrentTexture, uint32_t aeQueryType, bool abForce, bool abWholeBody, NiRenderer::ClearFlags uiClearMode, bool abEndFrame) {
+			void Hook(BSRenderedTexture* apCurrentTexture, uint32_t aeQueryType, bool abForce, bool abWholeBody, NiRenderer::ClearFlags uiClearMode, bool abEndFrame) {
 				VATSEffect* pThis = reinterpret_cast<VATSEffect*>(this);
 
 				const BODY_PART_TYPE eOriginalLimb = pThis->eSelectedLimb;
 				if (pThis->eMode == VATSEffect::Mode::TARGET && pThis->bIsOcclusionEnabled) {
-					if (eNextLimbToRender != BODY_PART_TYPE::NONE) {
+					if (eNextLimbToRender != BODY_PART_TYPE::NONE)
 						pThis->eSelectedLimb = BODY_PART_TYPE(eNextLimbToRender);
-					}
 				}
 
-				ThisCall(0x800F30, pThis, apCurrentTexture, aeQueryType, abForce, abWholeBody, uiClearMode, abEndFrame);
+				ThisCall(kDetour, pThis, apCurrentTexture, aeQueryType, abForce, abWholeBody, uiClearMode, abEndFrame);
 
 				pThis->eSelectedLimb = eOriginalLimb;
 			}
+		public:
+			Hook_DrawTargetToTexture() {
+				kDetour.ReplaceCall(uiAddress, &Hook_DrawTargetToTexture::Hook);
+			}
+		};
 
+		HookUtils::CallDetour kPrecalcTargetHitChancesDetour;
+		HookUtils::CallDetour kCancelAttachmentDetour;
+		class Hook {
+		public:
 			bool VATSUpdate() {
 				VATSMenu* pThis = reinterpret_cast<VATSMenu*>(this);
-				bool bResult = ThisCall<bool>(0x7F3E00, this);
+				bool bResult = ThisCall<bool>(kPrecalcTargetHitChancesDetour, this);
 				if (bResult && ::VATS::GetSingleton()->eMode != VATS_PLAYBACK) {
 					VATSEffect* pEffect = Interface::GetVATSEffect();
 					TESObjectREFR* pTargetRef = VATSMenu::GetTargetReference();
@@ -196,22 +228,13 @@ namespace RealTimeMenus {
 					}
 				}
 
-				ThisCall(0x57ACC0, this);
+				ThisCall(kCancelAttachmentDetour, this);
 			}
 
-			void RestoreGlobalTimeMultiplier(float afMult, bool abNow) {
-				if (bTimeScaleChanged) {
-					afMult = fOriginalTimeScale;
-					if (bExiting)
-						bTimeScaleChanged = false;
-				}
-				ThisCall(0xAA4DB0, this, afMult, abNow);
+			void PauseWorldSounds() {
 			}
 
-			void MuteSelected(uint32_t aeSoundTypes, bool abExact) {
-			}
-
-			void UnmuteSelected(uint32_t aeSoundTypes, bool abExact) {
+			void UnPauseWorldSounds() {
 			}
 		};
 
@@ -242,7 +265,7 @@ namespace RealTimeMenus {
 				TimeGlobal::GetSingleton()->SetGlobalTimeMultiplier(fVATSTimeMultSetting.Float(), true);
 		}
 
-		void __declspec(naked) __fastcall OnVATSSetMode_Asm() {
+		SPEC_NAKED void __fastcall OnVATSSetMode_Asm() {
 			static constexpr uint32_t uiJumpTarget = 0x9C6C79;
 			__asm {
 				mov     ecx, [ebp + 8]
@@ -271,59 +294,59 @@ namespace RealTimeMenus {
 
 		void InitDeferredHooks() {
 			if (!Settings::IsMenuPaused(Interface::VATS)) {
-				PatchMemoryNop(0x944965, 6); // Always track target
+				HookUtils::PatchMemoryNop(0x944965, 6); // Always track target
 
 				// Render VATS UI even if we are not "on the target" (since it's moving)
-				PatchMemoryNop(0x9454CC, 2);
-				PatchMemoryNop(0x9454DE, 2);
+				HookUtils::PatchMemoryNop(0x9454CC, 2);
+				HookUtils::PatchMemoryNop(0x9454DE, 2);
 
-				ReplaceCallEx(0x7ED349, &Hook::VATSUpdate);
+				kPrecalcTargetHitChancesDetour.ReplaceCall(0x7ED349, &Hook::VATSUpdate);
 
-				ReplaceCallEx(0x7EB8B1, &Hook::MuteSelected);
-				ReplaceCallEx(0x7EC391, &Hook::UnmuteSelected);
+				HookUtils::ReplaceCall(0x7EA157, &Hook::PauseWorldSounds);
+				HookUtils::ReplaceCall(0x7EBDAD, &Hook::UnPauseWorldSounds);
 
-				ReplaceCallEx(0x55A47D, &Hook::ClearTargetRef); // Clear target ref on target delete
+				kCancelAttachmentDetour.ReplaceCall(0x55A47D, &Hook::ClearTargetRef); // Clear target ref on target delete
 
-				WriteRelJump(0x9C6C6F, OnVATSSetMode_Asm); // Set/control timemult
+				HookUtils::WriteRelJump(0x9C6C6F, OnVATSSetMode_Asm); // Set/control timemult
 
-				ReplaceCallEx(0x9C6F3A, &Hook::RestoreGlobalTimeMultiplier); // Restore time multiplier
-				ReplaceCallEx(0x9C7F27, &Hook::RestoreGlobalTimeMultiplier);
-				ReplaceCallEx(0x9C83A0, &Hook::RestoreGlobalTimeMultiplier);
-				ReplaceCallEx(0x9C8579, &Hook::RestoreGlobalTimeMultiplier);
-				ReplaceCallEx(0x9C8A82, &Hook::RestoreGlobalTimeMultiplier);
+				Hook_RestoreTimeMultiplier<0x9C6F3A>(); // Restore time multiplier
+				Hook_RestoreTimeMultiplier<0x9C7F27>();
+				Hook_RestoreTimeMultiplier<0x9C83A0>();
+				Hook_RestoreTimeMultiplier<0x9C8579>();
+				Hook_RestoreTimeMultiplier<0x9C8A82>();
 
 				// Update camera with real time delta instead of scaled
-				ReplaceCallEx(0x945444, &Hook::GetRealTimeDelta);
-				ReplaceCallEx(0x94545D, &Hook::GetRealTimeDelta);
-				ReplaceCallEx(0x95E3AE, &Hook::GetRealTimeDelta);
-				ReplaceCallEx(0x95E3C7, &Hook::GetRealTimeDelta);
-				ReplaceCallEx(0x7ED24D, &Hook::GetRealTimeDelta);
+				HookUtils::ReplaceCall(0x945444, &Hook::GetRealTimeDelta);
+				HookUtils::ReplaceCall(0x94545D, &Hook::GetRealTimeDelta);
+				HookUtils::ReplaceCall(0x95E3AE, &Hook::GetRealTimeDelta);
+				HookUtils::ReplaceCall(0x95E3C7, &Hook::GetRealTimeDelta);
+				HookUtils::ReplaceCall(0x7ED24D, &Hook::GetRealTimeDelta);
 
-				ReplaceCallEx(0x8741AF, &Hook::RenderQueriesAndMask);
-				ReplaceCallEx(0x874A82, &Hook::RenderQueriesAndMask);
+				Hook_DrawTargetToTexture<0x8741AF>();
+				Hook_DrawTargetToTexture<0x874A82>();
 
 				// Stewie patches this
 				if (*reinterpret_cast<uint8_t*>(0x71634F) == 0x75)
-					SafeWriteBuf(0x71634C + 2, "\x00\x74", 2); // Fix UI timemult in VATS
+					HookUtils::SafeWriteBuf(0x71634C + 2, "\x00\x74", 2); // Fix UI timemult in VATS
 
 				// Visual tweaks
 				{
-					WriteRelJump(0x7F6F44, 0x7F6F0E); // Make all % tiles boxes, like the torso (except head)
-					WriteRelJump(0x7F6F5F, 0x7F6F0E);
+					HookUtils::WriteRelJump(0x7F6F44, 0x7F6F0E); // Make all % tiles boxes, like the torso (except head)
+					HookUtils::WriteRelJump(0x7F6F5F, 0x7F6F0E);
 
-					WriteRelJump(0x7F2040, 0x7F20E9); // Treat every % tile as visible
+					HookUtils::WriteRelJump(0x7F2040, 0x7F20E9); // Treat every % tile as visible
 
-					WriteRelJump(0x7F218E, 0x7F226F); // Center tiles on body parts (except head)
+					HookUtils::WriteRelJump(0x7F218E, 0x7F226F); // Center tiles on body parts (except head)
 
-					WriteRelJump(0x7F2290, 0x7F22DA); // Skip screen bounds check
+					HookUtils::WriteRelJump(0x7F2290, 0x7F22DA); // Skip screen bounds check
 
-					WriteRelJump(0x7F231E, 0x7F236B); // Don't direction tiles based on their screen position
+					HookUtils::WriteRelJump(0x7F231E, 0x7F236B); // Don't direction tiles based on their screen position
 
-					WriteRelJump(0x7F26F0, 0x7F27AD); // Skip screen bound checks
+					HookUtils::WriteRelJump(0x7F26F0, 0x7F27AD); // Skip screen bound checks
 
 					// Reduce tile safezones to prevent them from jumping around too much
-					SafeWrite32(0x7F23A6 + 2, uint32_t(&fTileSafeZoneX));
-					SafeWrite32(0x7F23AF + 2, uint32_t(&fTileSafeZoneY));
+					HookUtils::SafeWrite32(0x7F23A6 + 2, uint32_t(&fTileSafeZoneX));
+					HookUtils::SafeWrite32(0x7F23AF + 2, uint32_t(&fTileSafeZoneY));
 				}
 			}
 		}

@@ -70,7 +70,7 @@ void TESMain::DrawWorld_UpdateOffscreenBuffers() {
 }
 
 // GAME - 0x871A50
-void TESMain::DrawWorld_RenderedMenuInterface() {
+void TESMain::UpdateOffscreenInterface() {
 	CdeclCall(0x871A50);
 }
 

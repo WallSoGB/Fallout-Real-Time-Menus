@@ -33,8 +33,8 @@ namespace RealTimeMenus {
 
 	constexpr uint32_t EFFECT_FLAG_PAUSED_IN_MENU = 1 << 30;
 
-	CallDetour kInterfacePreIdle;
-	CallDetour kLoadBlockedScriptsDetour;
+	HookUtils::CallDetour kInterfacePreIdle;
+	HookUtils::CallDetour kLoadBlockedScriptsDetour;
 
 	bool bOurInMenuMode = false;
 	bool bBlockingMenuMode = false;
@@ -61,9 +61,9 @@ namespace RealTimeMenus {
 
 	template<uint32_t uiAddress>
 	class Hook_FakeMenuMode {
-		static inline CallDetour kDetour;
+		static inline HookUtils::CallDetour kDetour;
 		static bool IsMenuMode() {
-			const uint32_t uiOverwrittenAddr = kDetour.GetOverwrittenAddr();
+			const uint32_t uiOverwrittenAddr = kDetour;
 			if (uiOverwrittenAddr != 0x702360)
 				CdeclCall(uiOverwrittenAddr);
 
@@ -78,9 +78,9 @@ namespace RealTimeMenus {
 
 	template<uint32_t uiAddress>
 	class Hook_CanSendOnTriggerEvents {
-		static inline CallDetour kDetour;
+		static inline HookUtils::CallDetour kDetour;
 		static TESForm* CanSendEvent(void* apArg) {
-			TESForm* pForm = CdeclCall<TESForm*>(kDetour.GetOverwrittenAddr(), apArg);
+			TESForm* pForm = CdeclCall<TESForm*>(kDetour, apArg);
 			return IsTriggerDisallowedForForm(pForm);
 		}
 	public:
@@ -91,9 +91,9 @@ namespace RealTimeMenus {
 
 	template<uint32_t uiAddress>
 	class Hook_TrackActivatedReference {
-		static inline CallDetour kDetour;
+		static inline HookUtils::CallDetour kDetour;
 		bool GrabActivatedRef() {
-			bool bNoActivate = ThisCall<bool>(kDetour.GetOverwrittenAddr(), this); // PlayerCharacter::GetPreventActivate
+			bool bNoActivate = ThisCall<bool>(kDetour, this); // PlayerCharacter::GetPreventActivate
 			if (!bNoActivate) {
 				SetActivatedRefrence();
 			}
@@ -101,14 +101,19 @@ namespace RealTimeMenus {
 		}
 	public:
 		Hook_TrackActivatedReference() {
-			kDetour.ReplaceCallEx(uiAddress, &Hook_TrackActivatedReference::GrabActivatedRef);
+			kDetour.ReplaceCall(uiAddress, &Hook_TrackActivatedReference::GrabActivatedRef);
 		};
 	};
 
+
+	HookUtils::CallDetour kSkyUpdateDetour;
+	HookUtils::CallDetour kUpdateEffectDetour;
+	HookUtils::CallDetour kUpdatePlayerDetour;
+	HookUtils::CallDetour kDeactivateSequenceDetour;
 	class Hook {
 	public:
 		void WaitSkyUpdate(float afDelta) {
-			ThisCall(0x63AC70, this, afDelta); // Sky::Update
+			ThisCall(kSkyUpdateDetour, this, afDelta); // Sky::Update
 			TES::GetSingleton()->UpdateCellAnimations(afDelta);
 			NiUpdateData kData(afDelta, true, false);
 			ThisCall(0xC50610, CdeclCall<void*>(0x45A190), &kData); // BSParticleSystemManager::UpdateAll
@@ -116,7 +121,7 @@ namespace RealTimeMenus {
 
 		void UpdatePlayer() {
 			PlayerCharacter* pThis = reinterpret_cast<PlayerCharacter*>(this);
-			pThis->ForceGrenadeHold();
+			ThisCall(kUpdatePlayerDetour, this);
 			if (RealTimeMenus::Utils::IsMenuPausingGame()) [[unlikely]] {
 				return;
 			}
@@ -198,7 +203,7 @@ namespace RealTimeMenus {
 				}
 			}
 
-			ThisCall(0x804560, this, afDelta); // ActiveEffect::UpdateEffect
+			ThisCall(kUpdateEffectDetour, this, afDelta); // ActiveEffect::UpdateEffect
 		}
 
 		void InterfaceManager_PreIdle() {
@@ -217,7 +222,7 @@ namespace RealTimeMenus {
 				}
 			}
 
-			ThisCall(kInterfacePreIdle.GetOverwrittenAddr(), this);
+			ThisCall(kInterfacePreIdle, this);
 
 			if (pThis->uiMenuMode == InterfaceManager::MENU_MODE_OFF || !RealTimeMenus::Utils::IsMenuPausingGame()) {
 				if (pThis->bHasMutedSounds) {
@@ -238,9 +243,11 @@ namespace RealTimeMenus {
 			}
 		}
 
-		static int32_t __fastcall ShouldDeactivateSequence(const TESObjectREFR* apReference, NiControllerSequence* apSequence) {
-			if (apReference == Utils::pActivatedReference) {
-				const TESBoundObject* pBase = apReference->GetObjectReference();
+		int32_t DeactivateSequence(NiControllerSequence* apSequence, float afEaseOutTime) {
+			uint8_t* pEBP = HookUtils::GetParentBasePtr();
+			TESObjectREFR* pReference = *reinterpret_cast<TESObjectREFR**>(pEBP - 0x28);
+			if (pReference == Utils::pActivatedReference) {
+				const TESBoundObject* pBase = pReference->GetObjectReference();
 				const char* pSequenceName = apSequence->GetName();
 				if (pBase && pSequenceName && strcmp(pSequenceName, "Open") == 0) {
 					auto eType = pBase->GetFormType();
@@ -259,24 +266,14 @@ namespace RealTimeMenus {
 				}
 			}
 
-			return apSequence->Deactivate(0.f, false);
+			return ThisCall<int32_t>(kDeactivateSequenceDetour, this, apSequence, afEaseOutTime);
 		}
 
 		static void* InitBlockedScripts() {
 			RealTimeMenus::Scripting::LoadBlockFiles();
-			return CdeclCall<void*>(kLoadBlockedScriptsDetour.GetOverwrittenAddr());
+			return CdeclCall<void*>(kLoadBlockedScriptsDetour);
 		}
 	};
-
-	__declspec(naked) void DeactivateSequenceHook_Asm() {
-		static constexpr uint32_t uiReturnAddr = 0x567199;
-		__asm {
-			mov		edx, [ebp - 0x1C]
-			mov		ecx, [ebp - 0x28]
-			call	Hook::ShouldDeactivateSequence
-			jmp		uiReturnAddr
-		}
-	}
 }
 
 #pragma endregion
@@ -310,7 +307,7 @@ namespace RealTimeMenus {
 	}
 
 	void InitDeferredHooks() {
-		ReplaceCallEx(0x86F97C, &Hook::UpdatePlayer);
+		kUpdatePlayerDetour.ReplaceCall(0x86F97C, &Hook::UpdatePlayer);
 
 		// Don't trigger Havok events for player in menu mode
 		Hook_CanSendOnTriggerEvents<0x62CE7E>();
@@ -318,16 +315,16 @@ namespace RealTimeMenus {
 		Hook_CanSendOnTriggerEvents<0x62D244>();
 
 		// Add a flag to disallow effect update in MenuMode
-		ReplaceCallEx(0x823DE6, &Hook::UpdateActiveEffect);
+		kUpdateEffectDetour.ReplaceCall(0x823DE6, &Hook::UpdateActiveEffect);
 
 		// Track activated object so we can close their menus if player gets too far
 		Hook_TrackActivatedReference<0x94063B>();
 		Hook_TrackActivatedReference<0x943150>();
 
 		// Visual patches
-		SafeWrite32(0x86E771 + 3, uint32_t(&bOurInMenuMode)); // Update imagespace
-		SafeWriteBuf(0x94E141, "\xD9\x45\xF8\x90\x90\x90", 6); // Make sky update with correct delta in sleep/wait
-		ReplaceCallEx(0x94E157, &Hook::WaitSkyUpdate); // Run animations and particles in sleep/wait
+		HookUtils::SafeWrite32(0x86E771 + 3, uint32_t(&bOurInMenuMode)); // Update imagespace
+		HookUtils::SafeWriteBuf(0x94E141, "\xD9\x45\xF8\x90\x90\x90"); // Make sky update with correct delta in sleep/wait
+		kSkyUpdateDetour.ReplaceCall(0x94E157, &Hook::WaitSkyUpdate); // Run animations and particles in sleep/wait
 
 		Hook_FakeMenuMode<0x837D05>(); // ImpactMixer::PlayFootstep
 		Hook_FakeMenuMode<0x8387C5>(); // ImpactMixer::PlayJumpSound
@@ -347,19 +344,19 @@ namespace RealTimeMenus {
 		}
 
 		// Handle audio muting in menu mode
-		kInterfacePreIdle.ReplaceCallEx(0x702806, &Hook::InterfaceManager_PreIdle);
-		WriteRelJump(0x70BA37, 0x70BA94);
-		WriteRelJump(0x70BAA1, 0x70BB7E);
+		kInterfacePreIdle.ReplaceCall(0x702806, &Hook::InterfaceManager_PreIdle);
+		HookUtils::WriteRelJump(0x70BA37, 0x70BA94);
+		HookUtils::WriteRelJump(0x70BAA1, 0x70BB7E);
 
 		// Don't deactivate the "Open" anim sequences for activated references, because it'd reset soon after opening the menu (they expect menu to pause the game)
 		if (!Settings::IsMenuPaused(Interface::Container) || !Settings::IsMenuPaused(Interface::Computers))
-			WriteRelJump(0x567187, DeactivateSequenceHook_Asm);
+			kDeactivateSequenceDetour.ReplaceCall(0x567194, &Hook::DeactivateSequence);
 
 		if (Settings::bShowHandsInVATS)
-			PatchMemoryNop(0x870C99, 2);
+			HookUtils::PatchMemoryNop(0x870C99, 2);
 
 		if (Settings::bShowHandsInDialogue)
-			PatchMemoryNop(0x870CA5, 2);
+			HookUtils::PatchMemoryNop(0x870CA5, 2);
 	}
 
 	void HandleNVR() {
