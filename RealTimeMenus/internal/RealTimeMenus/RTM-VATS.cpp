@@ -149,7 +149,7 @@ namespace RealTimeMenus {
 										else {
 											pPart->bNeedsRecalc = true;
 										}
-										ThisCall<float>(0x7F1290, this, pIter); // VATSMenu::UpdateHitChanceForBodyPartData
+										ThisCall(0x7F1290, this, pIter); // VATSMenu::UpdateHitChanceForBodyPartData
 									}
 
 									pIter = pIter->GetNext();
@@ -164,9 +164,10 @@ namespace RealTimeMenus {
 								}
 
 								if (bRenderedLimbs) {
-									eNextLimbToRender = (eNextLimbToRender + 1) % BODY_PART_TYPE::COUNT;
+									// Bounded: if the target has no part in [0, COUNT) this used to spin forever
 									bool bValidPart = false;
-									while (!bValidPart) {
+									for (int32_t iTries = 0; iTries < BODY_PART_TYPE::COUNT && !bValidPart; iTries++) {
+										eNextLimbToRender = (eNextLimbToRender + 1) % BODY_PART_TYPE::COUNT;
 										auto pIter = pTarget->kBodyParts.GetHead();
 										while (pIter && !pIter->IsEmpty()) {
 											VATSBodyPart* pPart = pIter->GetItem();
@@ -176,10 +177,10 @@ namespace RealTimeMenus {
 												break;
 											}
 										}
-
-										if (!bValidPart)
-											eNextLimbToRender = (eNextLimbToRender + 1) % BODY_PART_TYPE::COUNT;
 									}
+
+									if (!bValidPart)
+										eNextLimbToRender = BODY_PART_TYPE::NONE;
 								}
 								else {
 									eNextLimbToRender = BODY_PART_TYPE::NONE;
@@ -211,26 +212,38 @@ namespace RealTimeMenus {
 					if (pEffect->kCurrentTarget.pRef == pThis) {
 						pEffect->SetTarget(nullptr, BODY_PART_TYPE::TORSO, false);
 					}
-					else {
-						for (int32_t i = 0; i < 32; i++) {
-							if (pEffect->kAllTargets[i].pRef == pThis) {
-								NiNode* pNode = pEffect->kAllTargets[i].spNode;
-								CdeclCall(0xBA91A0, pNode, BSSP_VATS_SELECTION, false); // BSShaderProperty::SetFlagRecurse
-								pEffect->kAllTargets[i].pRef = nullptr;
-								pEffect->kAllTargets[i].spNode = nullptr;
-								pEffect->iTargetCount--;
 
-								if (pEffect->iHighlightedTarget == i) {
-									pEffect->iHighlightedTarget = -1;
-								}
+					// In scan mode the current target is also in kAllTargets (VATSHighlightData::AddAdditionalRef), so always
+					// scan the list. Keep it packed: the game only walks [0, iTargetCount), so a hole would hide the last entry.
+					const int32_t iCount = pEffect->iTargetCount < 32 ? pEffect->iTargetCount : 32;
+					for (int32_t i = 0; i < iCount; i++) {
+						if (pEffect->kAllTargets[i].pRef != pThis)
+							continue;
 
-								break;
-							}
+						NiNode* pNode = pEffect->kAllTargets[i].spNode;
+						CdeclCall(0xBA91A0, pNode, BSSP_VATS_SELECTION, false); // BSShaderProperty::SetFlagRecurse
+
+						const int32_t iLast = iCount - 1;
+						if (i != iLast) {
+							pEffect->kAllTargets[i].pRef = pEffect->kAllTargets[iLast].pRef;
+							pEffect->kAllTargets[i].spNode = pEffect->kAllTargets[iLast].spNode;
 						}
+						pEffect->kAllTargets[iLast].pRef = nullptr;
+						pEffect->kAllTargets[iLast].spNode = nullptr;
+						pEffect->iTargetCount = iLast;
+
+						if (pEffect->iHighlightedTarget == i)
+							pEffect->iHighlightedTarget = -1;
+						else if (pEffect->iHighlightedTarget == iLast)
+							pEffect->iHighlightedTarget = i;
+
+						break;
 					}
 				}
 
-				ThisCall(kCancelAttachmentDetour, this);
+				// TESObjectREFR::RemoveFromMultiboundsCheckList (0x57ACC0) is __cdecl and takes the reference on the stack.
+				// ThisCall only worked because the compiler happened to emit a tail call that reused the caller's argument.
+				CdeclCall(kCancelAttachmentDetour, pThis);
 			}
 
 			void PauseWorldSounds() {
