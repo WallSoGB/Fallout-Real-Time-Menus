@@ -149,7 +149,7 @@ namespace RealTimeMenus {
 										else {
 											pPart->bNeedsRecalc = true;
 										}
-										ThisCall(0x7F1290, this, pIter); // VATSMenu::UpdateHitChanceForBodyPartData
+										ThisCall<float>(0x7F1290, this, pIter); // VATSMenu::UpdateHitChanceForBodyPartData
 									}
 
 									pIter = pIter->GetNext();
