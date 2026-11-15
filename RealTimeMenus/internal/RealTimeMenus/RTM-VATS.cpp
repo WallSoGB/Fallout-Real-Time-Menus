@@ -129,7 +129,7 @@ namespace RealTimeMenus {
 								pEffect->eSelectedLimb = BODY_PART_TYPE::TORSO;
 							}
 
-							ThisCall(0x7F1840, this); // VATSMenu::InitBodyPartTiles
+							pThis->InitBodyPartTiles();
 
 							{
 								auto pIter = pTarget->kBodyParts.GetHead();
@@ -143,24 +143,24 @@ namespace RealTimeMenus {
 									pPart->bNeedsRecalc = false;
 									if (pEffect->GetBodyPartVisibilityPercent(pPart->eBodyPart, pPart->fPercentVisible)) {
 										pPart->fHitChance = 0.f;
-										if (ThisCall<bool>(0x7F06D0, this, pPart)) { // VATSMenu::IsBodyPartVisible
+										if (pThis->IsBodyPartVisible(pPart)) {
 											pPart->bChanceCalculated = true;
 										}
 										else {
 											pPart->bNeedsRecalc = true;
 										}
-										ThisCall(0x7F1290, this, pIter); // VATSMenu::UpdateHitChanceForBodyPartData
+										pThis->UpdateHitChanceForBodyPartData(pIter);
 									}
 
 									pIter = pIter->GetNext();
 								}
 							}
 
-							{
+							if (pEffect->eSelectedLimb != BODY_PART_TYPE::COUNT && pEffect->eSelectedLimb != BODY_PART_TYPE::NONE) {
 								bool bRenderedLimbs = false;
 								for (uint32_t i = 0; i < 16; i++) {
-									bRenderedLimbs |= pEffect->bHasExecutedQuery[i];
-									pEffect->bHasExecutedQuery[i] = false;
+									bRenderedLimbs |= pEffect->bValidOcclusionResult[i];
+									pEffect->bValidOcclusionResult[i] = false;
 								}
 
 								if (bRenderedLimbs) {
@@ -181,9 +181,6 @@ namespace RealTimeMenus {
 											eNextLimbToRender = (eNextLimbToRender + 1) % BODY_PART_TYPE::COUNT;
 									}
 								}
-								else {
-									eNextLimbToRender = BODY_PART_TYPE::NONE;
-								}
 
 								pEffect->bIsOcclusionEnabled = true;
 							}
@@ -192,7 +189,7 @@ namespace RealTimeMenus {
 							if (uiCurrentTime - uiLastChanceUpdateTime >= 500) {
 								uiLastChanceUpdateTime = uiCurrentTime;
 
-								ThisCall(0x7F0EA0, this); // VATSMenu::UpdateHitChanceTiles
+								pThis->UpdateHitChanceTiles();
 							}
 						}
 					}
@@ -221,6 +218,7 @@ namespace RealTimeMenus {
 								pEffect->iTargetCount--;
 
 								if (pEffect->iHighlightedTarget == i) {
+									eNextLimbToRender = BODY_PART_TYPE::NONE;
 									pEffect->iHighlightedTarget = -1;
 								}
 
@@ -251,6 +249,7 @@ namespace RealTimeMenus {
 					break;
 				case VATS_TARGET_SELECT:
 				case VATS_MENU_MODE:
+					eNextLimbToRender = BODY_PART_TYPE::NONE;
 					if (!bTimeScaleChanged) {
 						bTimeScaleChanged = true;
 						fOriginalTimeScale = fCurrentTimeScale;
@@ -258,6 +257,7 @@ namespace RealTimeMenus {
 					break;
 				case VATS_SCAN_MODE:
 				case VATS_PLAYBACK:
+					eNextLimbToRender = BODY_PART_TYPE::NONE;
 					break;
 				default:
 					break;
