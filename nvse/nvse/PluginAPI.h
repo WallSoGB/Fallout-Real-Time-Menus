@@ -820,17 +820,17 @@ struct NVSEEventManagerInterface
 		eParamType_ReferencePtr,
 		eParamType_BaseFormPtr
 	};
-	static [[nodiscard]] bool IsFormParam(SCRIPT_PARAMETER_TYPE pType)
+	[[nodiscard]] static bool IsFormParam(SCRIPT_PARAMETER_TYPE pType)
 	{
 		return pType == eParamType_RefVar || pType == eParamType_Reference || pType == eParamType_BaseForm
 			|| pType == eParamType_Anything;
 	}
-	static [[nodiscard]] bool IsPtrParam(SCRIPT_PARAMETER_TYPE pType)
+	[[nodiscard]] static bool IsPtrParam(SCRIPT_PARAMETER_TYPE pType)
 	{
 		return (pType >= eParamType_FloatPtr) && (pType <= eParamType_BaseFormPtr);
 	}
 	// Gets the regular non-ptr version of the param
-	static [[nodiscard]] SCRIPT_PARAMETER_TYPE GetNonPtrParamType(SCRIPT_PARAMETER_TYPE pType)
+	[[nodiscard]] static SCRIPT_PARAMETER_TYPE GetNonPtrParamType(SCRIPT_PARAMETER_TYPE pType)
 	{
 		if (IsPtrParam(pType))
 		{
