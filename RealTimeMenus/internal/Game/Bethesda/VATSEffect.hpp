@@ -37,11 +37,11 @@ public:
 	VATSEffectTarget				kAllTargets[32];
 	NiPointer<NiRefObject>			spUnk114;
 	bool							bIsOcclusionEnabled;
-	bool							bUnused119[16];
+	bool							bWaitingForOcclusionQuery[16];
 	bool							bUnk12B;
 	BSOcclusionQuery*				pPartialLimbQuery[16];
 	BSOcclusionQuery*				pEntireLimbQuery[16];
-	bool							bHasExecutedQuery[16];
+	bool							bValidOcclusionResult[16];
 	uint32_t						uiTotalArea[16];
 	uint32_t						uiVisibleArea[16];
 	BODY_PART_TYPE					eSelectedLimb;

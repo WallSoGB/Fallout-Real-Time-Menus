@@ -158,6 +158,14 @@ public:
 	static TESObjectREFR* GetTargetReference() { return *reinterpret_cast<TESObjectREFR**>(0x11F21CC); };
 	
 	BSSimpleList<VATSTarget*>* FindTarget(TESObjectREFR* apRef);
+
+	void InitBodyPartTiles();
+
+	void UpdateHitChanceTiles();
+
+	bool IsBodyPartVisible(VATSBodyPart* apBodyPart) const;
+
+	float UpdateHitChanceForBodyPartData(BSSimpleList<VATSBodyPart*>* apBodyPartEntry);
 };
 
 ASSERT_SIZE(VATSMenu, 0x144);
